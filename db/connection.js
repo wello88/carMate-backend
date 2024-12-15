@@ -1,7 +1,9 @@
-import mongoose from "mongoose";
+import { Sequelize } from 'sequelize';
 
-export const connectDB = () => {
-    mongoose.connect(process.env.DB_URL)
-    .then(() => console.log("db connected successfully"))
-    .catch((err) => console.log("error in db connection"));
-}
+const sequelize = new Sequelize('database_name', 'username', 'password', {
+  host: 'localhost',
+  dialect: 'postgres',
+  logging: false, // Disable SQL logging
+});
+
+export default sequelize;
