@@ -77,7 +77,14 @@ export const login = async (req, res, next) => {
 
     const { email, password } = req.body;
 
-    const user = await User.findOne({ where: { email } && {status: 'verified'} });
+    const user = await User.findOne({ 
+        where: { 
+            email: email,
+            status: 'verified'
+        },
+        // Include password in attributes for comparison
+        attributes: ['email', 'password', 'id', 'role']
+    });
 
     if (!user) {
         return next(new AppError(messages.user.notfound, 404));
