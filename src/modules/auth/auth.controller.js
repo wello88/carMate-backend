@@ -77,18 +77,18 @@ export const login = async (req, res, next) => {
 
     const { email, password } = req.body;
 
-    const userExist = await User.findOne({ where: { email } && {status: 'verified'} });
+    const user = await User.findOne({ where: { email } && {status: 'verified'} });
 
-    if (!userExist) {
+    if (!user) {
         return next(new AppError(messages.user.notfound, 404));
     }
 
 
     // Compare passwords
-    const isValid = comparePassword({password, hashPassword:userExist.password });
+    const isValid = comparePassword({password, hashPassword:user.password });
 
     if (!isValid) {
-        console.log(userExist.password);
+        console.log(user.password);
         console.log(password);
         
         return next(new AppError(messages.user.invalidCreadintials, 401));
