@@ -19,10 +19,10 @@ export const signup = async (req, res, next) => {
 
     if (userExist) {
         await transaction.rollback();
-        return next(new AppError('User already exists', 400));
+        return next(new AppError(messages.user.alreadyExist, 400));
     }
 
-    const hashedpassword = hashPassword(password)
+    const hashedpassword = hashPassword({password})
     // Create user within a transaction
     const newUser = await User.create({
         firstName,
@@ -77,23 +77,26 @@ export const login = async (req, res, next) => {
 
     const { email, password } = req.body;
 
-    const user = await User.findOne({ where: { email } });
+    const userExist = await User.findOne({ where: { email } && {status: 'verified'} });
 
-    if (!user) {
+    if (!userExist) {
         return next(new AppError(messages.user.notfound, 404));
     }
 
 
     // Compare passwords
-    const isValid = comparePassword({password, hashPassword:user.password });
+    const isValid = comparePassword({password, hashPassword:userExist.password });
 
     if (!isValid) {
+        console.log(userExist.password);
+        console.log(password);
+        
         return next(new AppError(messages.user.invalidCreadintials, 401));
     }
     // Verify user status
-    if (user.status === 'blocked' || user.status === 'pending') {
-        return next(new AppError(messages.user.notverified, 401));
-    }
+    // if (user.status === 'blocked' || user.status === 'pending') {
+    //     return next(new AppError(messages.user.notverified, 401));
+    // }
     user.isActive = true
     await user.save()
     // Generate token

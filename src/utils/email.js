@@ -1,22 +1,20 @@
 import nodemailer from 'nodemailer'
-export const sendEmail = async ({to='',subject='',text='',html=''}) => {
+import { htmlTemplate } from './htmlTemplate.js';
 
-  
-const transporter = nodemailer.createTransport({
-    service:'gmail',
+export const sendEmail = async (email,token)=>{
+    const transporter = nodemailer.createTransport({
+        service:"gmail",
+        auth: {
+          user: "abdow8896@gmail.com",
+          pass: "ajetimkguxezvxyr",
+        },
+      });
 
-    auth: {
-      user: "example@gmail.com",
-      pass: "jrywhanfcrtyrblm",
-    },
-  });
-    
-  
-  
-  const info = await transporter.sendMail({
-      from: '"abdo', // sender address
-      to, // list of receivers
-      subject, // Subject line
-      html, // html body
-    });
+      const info = await transporter.sendMail({
+        from: '"CARMATE" <abdow8896@gmail.com>', // sender address
+        to: email, // list of receivers
+        subject: "verify your email", // Subject line
+        text: "please verify your account", // plain text body
+        html: htmlTemplate(token), // html body
+      });
 }
