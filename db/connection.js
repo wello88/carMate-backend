@@ -1,7 +1,19 @@
-import mongoose from "mongoose";
+import { Sequelize } from 'sequelize';
 
-export const connectDB = () => {
-    mongoose.connect(process.env.DB_URL)
-    .then(() => console.log("db connected successfully"))
-    .catch((err) => console.log("error in db connection"));
-}
+const sequelize = new Sequelize('carmate', 'postgres', '123', {
+  host: 'localhost',
+  dialect: 'postgres',
+  logging: false, // Disable SQL logging
+});
+
+const connectDB = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log('Database connected successfully!');
+  } catch (error) {
+    console.error('Database connection failed:', error.message);
+    process.exit(1); // Exit the process on connection failure
+  }
+};
+
+export { sequelize, connectDB };

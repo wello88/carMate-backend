@@ -1,9 +1,23 @@
-// export * from './models/brand.model.js'
-// export * from './models/category.model.js'
-// export * from './models/product.model.js'
-// export * from './models/subcategory.model.js'
-// export * from './models/user.model.js'
-// export * from './models/review.model.js'
-// export * from './models/coupon.model.js'
-// export * from './models/cart.model.js'
-// export * from './models/order.model.js'
+import { sequelize } from './connection.js';
+import User from './models/user.model.js';
+// import Seller from './models/seller.model.js';
+import Worker from './models/worker.model.js';
+
+export const syncDatabase = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log('Database connected!');
+    await sequelize.sync({ alter: false });
+    console.log('Models synchronized!');
+  } catch (err) {
+    console.error('Error syncing database:', err);
+  }
+};
+
+
+
+export {
+  User,
+  //  Seller,
+    Worker
+};
