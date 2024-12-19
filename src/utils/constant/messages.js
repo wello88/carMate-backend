@@ -17,6 +17,7 @@ const genrateMessage = (entity)=>({
     addToWishlist:'added to wishlist successfully',
     invalidAmount:'invalid amount',
     outOfStock:'out of stock',
+    otpAlreadySent:'otp already sent',
 })
 export const messages = {
     user:genrateMessage('user'),
