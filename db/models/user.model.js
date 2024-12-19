@@ -1,7 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
-import {sequelize} from '../../db/connection.js'
+import { sequelize } from '../../db/connection.js'
 
-class User extends Model {}
+class User extends Model { }
 
 User.init(
   {
@@ -13,8 +13,11 @@ User.init(
     phone: { type: DataTypes.STRING }, //TODO : add phone number validation ON SELLER(required to seller)
     profilePhoto: { type: DataTypes.STRING },
     status: { type: DataTypes.ENUM('verified', 'pending', 'blocked'), defaultValue: 'pending' },
-    role: { type: DataTypes.ENUM('seller', 'worker', 'admin' ,'customer'), allowNull: false },
+    role: { type: DataTypes.ENUM('seller', 'worker', 'admin', 'customer'), allowNull: false },
     isActive: { type: DataTypes.BOOLEAN, defaultValue: false },
+    otp: { type: DataTypes.INTEGER },
+    otpExpiry: { type: DataTypes.DATE },
+    otpAttempts: { type: DataTypes.INTEGER, defaultValue: 0 },
   },
   { sequelize, modelName: 'User', tableName: 'users', timestamps: true }
 );
