@@ -1,5 +1,5 @@
 import { Model, DataTypes } from 'sequelize'
-import { sequelize } from '../../db/connection.js'
+import { sequelize } from '../connection.js'
 
 class Reminder extends Model {}
 
