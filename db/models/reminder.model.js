@@ -6,12 +6,18 @@ class Reminder extends Model {}
 Reminder.init(
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    tittle: { type: DataTypes.STRING, allowNull: false },
+    title: { type: DataTypes.STRING, allowNull: false },
     note: { type: DataTypes.TEXT },
-    cash: { type: DataTypes.DECIMAL, allowNull: false },
-    startdate: { type: DataTypes.DATE, allowNull: false },
-    enddate: { type: DataTypes.DATE, allowNull: false },
+    cash: { type: DataTypes.DECIMAL, allowNull: true },
+    startdate: { type: DataTypes.DATE, allowNull: true },
+    enddate: { type: DataTypes.DATE, allowNull: true },
   },
   { sequelize, modelName: 'Reminder', tableName: 'reminders', timestamps: true }
 )
 export default Reminder
+ 
+
+
+
+
+
