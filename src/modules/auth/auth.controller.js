@@ -4,6 +4,7 @@ import { AppError } from "../../utils/appError.js"
 import { messages } from "../../utils/constant/messages.js"
 import { sendEmail, sendEmailForgetPassword } from "../../utils/email.js";
 import { hashPassword, comparePassword } from "../../utils/hashAndcompare.js";
+import { htmlTemplateOTP } from "../../utils/htmlTemplate.js";
 import { generateOTP } from "../../utils/otp.js";
 import { genrateToken } from "../../utils/token.js";
 export const signup = async (req, res, next) => {
@@ -154,12 +155,19 @@ export const forgetPassword = async (req, res, next) => {
     // Save to database
     await userExist.save();
 
-    // Send email with OTP
-    await sendEmailForgetPassword({
-        to: email,
-        subject: 'Forget Password',
-        html: `<h1>You requested a password reset. Your OTP is ${otp}. If you did not request this, please ignore this email.</h1>`,
-    });
+    try {
+        await sendEmailForgetPassword({
+            to: email,
+            subject: 'Forget Password',
+            html: htmlTemplateOTP(otp),
+        });
+    } catch (emailError) {
+        // If email fails, we should remove the OTP from database
+        userExist.otp = null;
+        userExist.otpExpiry = null;
+        await userExist.save();
+        return next(new AppError('Failed to send email', 500));
+    }
 
     // Send response
     return res.status(200).json({ message: 'Check your email', success: true });
@@ -197,7 +205,7 @@ export const changPassword = async (req, res, next) => {
                 otpExpiry: null,
                 otpAttempts: null
             });
-            
+
             return next(new AppError('Maximum OTP attempts exceeded. Please request a new OTP.', 403));
         }
 
@@ -210,22 +218,22 @@ export const changPassword = async (req, res, next) => {
     // Check if OTP is expired
     if (user.otpExpiry < Date.now()) {
         const secondOTP = generateOTP();
-        
+
         await user.update({
             otp: secondOTP,
             otpExpiry: Date.now() + 5 * 60 * 1000,
             otpAttempts: 0
         });
 
-        await sendEmail({ 
-            to: email, 
-            subject: 'Resent OTP', 
-            html: `<h1>Your new OTP is ${secondOTP}</h1>` 
+        await sendEmail({
+            to: email,
+            subject: 'Resent OTP',
+            html: `<h1>Your new OTP is ${secondOTP}</h1>`
         });
-        
-        return res.status(200).json({ 
-            message: "Check your email", 
-            success: true 
+
+        return res.status(200).json({
+            message: "Check your email",
+            success: true
         });
     }
 
@@ -240,8 +248,8 @@ export const changPassword = async (req, res, next) => {
         otpAttempts: null
     });
 
-    return res.status(200).json({ 
-        message: 'Password updated successfully', 
-        success: true 
+    return res.status(200).json({
+        message: 'Password updated successfully',
+        success: true
     });
 };
