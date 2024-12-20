@@ -1,8 +1,9 @@
 import { sequelize } from './connection.js';
 import User from './models/user.model.js';
 import Reminder from './models/reminder.model.js';
-
-// import Seller from './models/seller.model.js';
+import Product from './models/product.model.js';
+import Community from './models/community.model.js';
+import Category from './models/category.model.js';
 import Worker from './models/worker.model.js';
 
 export const syncDatabase = async () => {
@@ -20,8 +21,9 @@ export const syncDatabase = async () => {
 
 export {
   User,
-  //  Seller,
-    Worker,
-    Reminder
+  Worker,
+  Reminder,
+  Community,
+  Category,
+  Product
 };
-
