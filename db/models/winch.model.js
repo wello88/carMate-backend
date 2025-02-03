@@ -1,9 +1,9 @@
 import { Model, DataTypes } from 'sequelize'
-import { sequelize } from '../../db/connection.js'
+import { sequelize } from '../connection.js'
 
-class TowTruck extends Model {}
+class Winch extends Model {}
 
-TowTruck.init(
+Winch.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -46,10 +46,10 @@ TowTruck.init(
   },
   {
     sequelize,
-    modelName: 'TowTruck',
-    tableName: 'towtrucks',
+    modelName: 'Winch',
+    tableName: 'winch',
     timestamps: true, // للإضافة التلقائية createdAt و updatedAt
   }
 )
 
-export default TowTruck
+export default Winch

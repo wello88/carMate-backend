@@ -5,7 +5,7 @@ import Product from './models/product.model.js';
 import Community from './models/community.model.js';
 import Category from './models/category.model.js';
 import Worker from './models/worker.model.js';
-import TowTruck from './models/towTruck.model.js';
+import Winch from './models/winch.model.js';
 
 export const syncDatabase = async () => {
   try {
@@ -27,5 +27,5 @@ export {
   Community,
   Category,
   Product,
-  TowTruck
+  Winch
 };
