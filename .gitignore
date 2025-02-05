@@ -1,3 +1,4 @@
 /node_modules
 /config
 /db/models/seller.model.js
+.vercel
