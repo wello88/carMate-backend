@@ -47,7 +47,7 @@ Winch.init(
   {
     sequelize,
     modelName: 'Winch',
-    tableName: 'winch',
+    tableName: 'winchs',
     timestamps: true,
   }
 )
