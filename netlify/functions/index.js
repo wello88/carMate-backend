@@ -10,6 +10,7 @@ initApp(app, express);
 // Connect to the database
 syncDatabase();
 
+app.get("/", (req, res) => res.send("Hello from Netlify!"));
 // Export for Netlify serverless function
 export default (req, res) => {
   app(req, res); // Pass requests to your Express app
