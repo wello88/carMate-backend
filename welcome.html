@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CARMATE Welcome</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .welcome-text {
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: white;
+        }
+
+        .gradient-text {
+            background-image: linear-gradient(to right, #ff0000, #000000);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+            text-shadow: 0 0 8px rgba(255, 0, 0, 0.5);
+        }
+
+        /* Add animation for the gradient */
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .gradient-text {
+            background-size: 200% 200%;
+            animation: gradient-animation 3s ease infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-text">
+        <h1>Welcome to <span class="gradient-text">CARMATE</span></h1>
+    </div>
+</body>
+</html>
