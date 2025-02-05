@@ -12,20 +12,20 @@ Winch.init(
     },
     firstName: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     lastName: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     email: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       unique: true,
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     profilePhoto: {
       type: DataTypes.STRING,
@@ -52,4 +52,4 @@ Winch.init(
   }
 )
 
-export default Winch
+export default Winch 

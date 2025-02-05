@@ -28,9 +28,9 @@ import { Sequelize } from 'sequelize';
 // });
 
 // connect sequelize to the database using aiven
-const sequelize = new Sequelize('carmate', 'postgres', '123', {
+const sequelize = new Sequelize('carmate', 'postgres', '1234', {
   host: 'localhost',
-  port: 5432,
+  port: 5050,
   dialect: 'postgres',
   logging: false, // Disable SQL logging
 
