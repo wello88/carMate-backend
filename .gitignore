@@ -2,3 +2,6 @@
 /config
 /db/models/seller.model.js
 .vercel
+
+# Local Netlify folder
+.netlify
