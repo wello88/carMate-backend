@@ -18,4 +18,7 @@ const app = express()
 initApp(app, express)
 syncDatabase();
 
-export default app
+export default (req, res) => {
+    app(req, res)
+}
+// export default app
