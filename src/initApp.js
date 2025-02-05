@@ -40,5 +40,6 @@ export const initApp =  (app,express) => {
         }
     });
     app.use('/auth', allRouters.authRouter)
+    app.use('/user', allRouters.userRouter)
     app.use(globalErrorHandler)
 }   

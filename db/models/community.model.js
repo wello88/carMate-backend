@@ -12,7 +12,7 @@ Community.init(
       autoIncrement: true,
     },
     postId: {
-      type: DataTypes.STRING,     // اعاده النظر
+      type: DataTypes.STRING, 
       allowNull: false,
       unique: true,
     },
@@ -21,7 +21,7 @@ Community.init(
       allowNull: false,
     },
     images: {
-      type: DataTypes.ARRAY(DataTypes.STRING), // قائمة من الصور
+      type: DataTypes.ARRAY(DataTypes.STRING), 
       allowNull: true,
     },
     comments: {
@@ -37,11 +37,11 @@ Community.init(
     sequelize,
     modelName: 'Community',
     tableName: 'communities',
-    timestamps: true, // للإضافة التلقائية createdAt و updatedAt
+    timestamps: true, 
   }
 )
 
-// إنشاء العلاقات
+
 Community.belongsTo(User, { foreignKey: 'userId', as: 'author' })
 User.hasMany(Community, { foreignKey: 'userId', as: 'posts' })
 

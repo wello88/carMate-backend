@@ -124,7 +124,7 @@ export const login = async (req, res, next) => {
 
 
 
-
+//forget password
 export const forgetPassword = async (req, res, next) => {
     const { email } = req.body;
 
@@ -178,7 +178,7 @@ export const forgetPassword = async (req, res, next) => {
 
 
 
-
+// changPassword
 export const changPassword = async (req, res, next) => {
     const { otp, newPassword, email } = req.body;
 

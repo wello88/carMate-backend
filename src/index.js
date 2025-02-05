@@ -5,6 +5,7 @@
 // import reviewRouter from "./modules/review/review.router.js";
 // import wishlistRouter from "./modules/wishlist/wishlist.router.js";
 import authRouter from "./modules/auth/auth.router.js";
+import userRouter from "./modules/user/user.router.js";
 // import adminRouter from "./modules/admin/admin.router.js";
 // import couponRouter from "./modules/coupon/coupon.router.js";
 // import cartRouter from "./modules/cart/cart.router.js"
@@ -13,16 +14,7 @@ import authRouter from "./modules/auth/auth.router.js";
 
 
 export {
-//     categoryRouter,
-//     subCategoryRouter,
-//     brandRouter,
-//     productRouter,
-//     reviewRouter,
-//     wishlistRouter,
+
     authRouter,
-//     adminRouter,
-//     couponRouter,
-//     cartRouter,
-    // userRouter,
-//     orderRouter
+    userRouter
 }
