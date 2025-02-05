@@ -1,7 +1,7 @@
 import { Model, DataTypes } from 'sequelize'
 import { sequelize } from '../connection.js'
 
-class Winch extends Model {}
+class Winch extends Model { }
 
 Winch.init(
   {
@@ -48,7 +48,7 @@ Winch.init(
     sequelize,
     modelName: 'Winch',
     tableName: 'winch',
-    timestamps: true, // للإضافة التلقائية createdAt و updatedAt
+    timestamps: true,
   }
 )
 

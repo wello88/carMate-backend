@@ -29,5 +29,8 @@ export const messages = {
     file:{required:'file is required'},
     review:genrateMessage('review'),
     order:genrateMessage('order'),
-    coupon:genrateMessage('coupon')
+    coupon:genrateMessage('coupon'),
+    car:genrateMessage('car'),
+    winch:genrateMessage('winch'),
+    reminder:genrateMessage('reminder'),
 }

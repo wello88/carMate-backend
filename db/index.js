@@ -6,12 +6,13 @@ import Community from './models/community.model.js';
 import Category from './models/category.model.js';
 import Worker from './models/worker.model.js';
 import Winch from './models/winch.model.js';
+import Car from './models/car.model.js';
 
 export const syncDatabase = async () => {
   try {
     await sequelize.authenticate();
     console.log('Database connected!');
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({ alter: false });
     console.log('Models synchronized!');
   } catch (err) {
     console.error('Error syncing database:', err);
@@ -27,5 +28,6 @@ export {
   Community,
   Category,
   Product,
-  Winch
+  Winch,
+  Car
 };
