@@ -11,9 +11,11 @@ const app = express()
 // app.use(express.json())
 // app.use('/auth',authRouter())
 
-syncDatabase();
 // authRouter()
 
 
 // dotenv.config({ path: path.resolve('./config/.env') })
 initApp(app, express)
+syncDatabase();
+
+export default app
