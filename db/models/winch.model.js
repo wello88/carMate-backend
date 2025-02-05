@@ -1,7 +1,8 @@
-import { Model, DataTypes } from 'sequelize'
-import { sequelize } from '../connection.js'
+import { Model, DataTypes } from 'sequelize';
+import { sequelize } from '../../db/winch.js'
 
-class Winch extends Model { }
+// Define the Winch Model
+class Winch extends Model {}
 
 Winch.init(
   {
@@ -48,8 +49,77 @@ Winch.init(
     sequelize,
     modelName: 'Winch',
     tableName: 'winch',
-    timestamps: true,
+    timestamps: true, // Automatically adds createdAt and updatedAt
   }
-)
+);
+
+// Sync the model with the database
+sequelize.sync().then(() => console.log('Database synced!')).catch((err) => console.error(err))
+
+// Initialize Express
+const app = express()
+app.use(express.json())
+
+// Routes
+
+// GET all Winches
+app.get('/winches', async (req, res) => {
+  try {
+    const winches = await Winch.findAll()
+    res.json(winches)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Server error' })
+  }
+})
+
+// GET a specific Winch by ID
+app.get('/winches/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const winch = await Winch.findByPk(id)
+    if (!winch) {
+      return res.status(404).json({ message: 'Winch not found' })
+    }
+    res.json(winch)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Server error' })
+  }
+})
+
+// DELETE a Winch by ID
+app.delete('/winches/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deleted = await Winch.destroy({ where: { id } });
+    if (!deleted) {
+      return res.status(404).json({ message: 'Winch not found' })
+    }
+    res.json({ message: 'Winch deleted successfully' })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Server error' })
+  }
+})
+
+// PUT (update) a Winch by ID
+app.put('/winches/:id', async (req, res) => {
+  const { id } = req.params;
+  const { firstName, lastName, email, password, profilePhoto, area, rating } = req.body;
+  try {
+    const [updated] = await Winch.update(
+      { firstName, lastName, email, password, profilePhoto, area, rating },
+      { where: { id } }
+    )
+    if (!updated) {
+      return res.status(404).json({ message: 'Winch not found' })
+    }
+    res.json({ message: 'Winch updated successfully' })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Server error' })
+  }
+})
 
 export default Winch
