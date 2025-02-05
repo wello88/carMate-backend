@@ -66,7 +66,7 @@ export const initApp = (app, express) => {
   app.use(express.json());
 
   // Root Route
-  app.get("/", (req, res) => res.send("Hello from Vercel!"));
+  app.get("/", (req, res) => res.send("Hello from Carmate!"));
 
   // Email Verification Route
   app.get("/verify/:token", async (req, res) => {

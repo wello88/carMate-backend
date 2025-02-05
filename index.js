@@ -16,7 +16,7 @@ const app = express()
 
 // dotenv.config({ path: path.resolve('./config/.env') })
 initApp(app, express)
-// syncDatabase();
+syncDatabase();
 
 export default (req, res) => {
     app(req, res)
