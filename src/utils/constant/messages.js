@@ -18,6 +18,7 @@ const genrateMessage = (entity)=>({
     invalidAmount:'invalid amount',
     outOfStock:'out of stock',
     otpAlreadySent:'otp already sent',
+    logoutsuccessfully:'logout successfully',
 })
 export const messages = {
     user:genrateMessage('user'),

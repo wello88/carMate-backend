@@ -11,11 +11,6 @@ Community.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    postId: {
-      type: DataTypes.STRING, 
-      allowNull: false,
-      unique: true,
-    },
     postContent: {
       type: DataTypes.TEXT,
       allowNull: false,
