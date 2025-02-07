@@ -36,6 +36,7 @@ export const deleteFromCloudinary = async (imageUrl) => {
         const folderPath = urlParts.slice(7).join("/"); // Extract path after Cloudinary domain
         const publicId = `${folderPath}/${filenameWithExt.split(".")[0]}`; // Remove extension
 
+
         // Delete image
         const result = await cloudinary.uploader.destroy(publicId);
         if (result.result !== "ok") {

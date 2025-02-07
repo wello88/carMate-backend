@@ -20,6 +20,7 @@ const genrateMessage = (entity)=>({
     otpAlreadySent:'otp already sent',
     contentRequired:'content is required',
     notFound:`${entity} not found`,
+    logoutsuccessfully:'logout successfully',
 })
 export const messages = {
     user:genrateMessage('user'),

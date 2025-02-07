@@ -4,6 +4,8 @@ import { messages } from "../../utils/constant/messages.js";
 import { uploadToCloudinary } from "../../utils/cloudinary.js";
 import { deleteFromCloudinary } from "../../utils/cloudinary.js"; // Function to delete images from Cloudinary
 import { ApiFeature } from "../../utils/apiFeature.js";
+
+
 //seller add product
 export const AddProduct = async (req, res, next) => {
     const { title, slug, productLink, price, description, categoryId } = req.body;
@@ -135,6 +137,7 @@ export const UpdateProduct = async (req, res, next) => {
 
 }
 
+
 //get owned products
 export const GetSellerProducts = async (req, res, next) => {
     const sellerId = req.authUser.id; // Get logged-in seller ID
@@ -169,24 +172,18 @@ export const GetSellerProducts = async (req, res, next) => {
 export const DeleteProduct = async (req, res, next) => {
     const { id } = req.params; // Get product ID from URL
     const sellerId = req.authUser.id; // Get logged-in seller ID
-        // Debugging: log the ID and seller ID
-        console.log("Product ID to delete:", id);
-        console.log("Logged-in seller ID:", sellerId);
+      
     // Find the product and ensure it belongs to the seller
     const product = await Product.findOne({
         where: { id, createdBy: sellerId }
     });
 
     if (!product) {
-        console.log("Product not found or unauthorized");
         return next(new AppError("Product not found or unauthorized", 404));
         }
-    // Debugging: log the found product
-    console.log("Found product:", product);
     // Delete images from Cloudinary
     try {
         if (product.mainImage) {
-            console.log("Deleting main image from Cloudinary:", product.mainImage);
 
             await deleteFromCloudinary(product.mainImage);
         }
@@ -197,7 +194,6 @@ export const DeleteProduct = async (req, res, next) => {
             await Promise.all(product.subImages.map(async (url) => await deleteFromCloudinary(url)));
         }
     } catch (error) {
-        console.log("Error deleting images from Cloudinary:", error);
 
         return next(new AppError("Failed to delete images from Cloudinary", 500));
     }
