@@ -21,6 +21,7 @@ const genrateMessage = (entity)=>({
 })
 export const messages = {
     user:genrateMessage('user'),
+    seller:genrateMessage('seller'),
     category:genrateMessage('category'),
     subcategory:genrateMessage('subcategory'),
     Brand:genrateMessage('Brand'),

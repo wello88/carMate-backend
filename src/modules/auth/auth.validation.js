@@ -7,12 +7,13 @@ export const signupSchema = Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string().min(6).max(100).required(),
     phone: Joi.string().pattern(/^[0-9]{10,15}$/).optional(),
-    role: Joi.string().valid("customer", "worker").required(),
+    role: Joi.string().valid("customer", "worker", "seller").required(),
     specialization: Joi.string().min(2).max(100).when("role", {
         is: "worker",
         then: Joi.required(),
         otherwise: Joi.forbidden(),
     }),
+    
     location: Joi.string().min(2).max(255).when("role", {
         is: "worker",
         then: Joi.required(),

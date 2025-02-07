@@ -2,18 +2,19 @@ export const roles = {
     CUSTOMER: "customer",
     ADMIN: "admin",
     WORKER: "worker",
-    SELLER: "seller"
+    SELLER: "seller",
+    SUPERADMIN: "superadmin"
 }
 Object.freeze(roles)
 
 
-export const status = {
+export const statusEnum = {
     PENDING: "pending",
     VERIFIED: "verified",
     BLOCKED: "blocked"
 
 }
-Object.freeze(status)
+Object.freeze(statusEnum)
 
 
 export const specialization = {

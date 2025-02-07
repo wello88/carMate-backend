@@ -41,6 +41,10 @@ export const initApp =  (app,express) => {
     });
     app.use('/auth', allRouters.authRouter)
     app.use('/user', allRouters.userRouter)
+    app.use('/workers', allRouters.workerRouter)
+    app.use('/admin', allRouters.adminRouter)
+    app.use('/seller', allRouters.sellerRouter)
+    app.use('/superAdmin', allRouters.superAdminRouter)
     app.use(globalErrorHandler)
 }   
 

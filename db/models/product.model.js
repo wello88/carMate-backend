@@ -11,7 +11,7 @@ Product.init(
     title: { type: DataTypes.STRING, allowNull: false },
     slug: { type: DataTypes.STRING, allowNull: false, unique: true },
     productLink: { type: DataTypes.STRING, allowNull: true },
-    createdByPrice: { type: DataTypes.DECIMAL, allowNull: false },
+    price: { type: DataTypes.DECIMAL, allowNull: false },
     subImages: { type: DataTypes.JSONB, allowNull: true }, // يمكن تخزين الصور كـ JSON array
     mainImage: { type: DataTypes.STRING, allowNull: true }, // صورة رئيسية
     description: { type: DataTypes.TEXT, allowNull: true },
