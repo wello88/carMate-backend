@@ -192,7 +192,7 @@ export const DeleteProduct = async (req, res, next) => {
         }
 
         if (product.subImages && product.subImages.length > 0) {
-            console.log("Deleting sub-images from Cloudinary:", product.subImages);
+            
 
             await Promise.all(product.subImages.map(async (url) => await deleteFromCloudinary(url)));
         }

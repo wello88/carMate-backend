@@ -11,26 +11,18 @@ Community.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    postId: {
-      type: DataTypes.STRING, 
-      allowNull: false,
-      unique: true,
-    },
     postContent: {
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    images: {
-      type: DataTypes.ARRAY(DataTypes.STRING), 
-      allowNull: true,
-    },
+    images: { type: DataTypes.JSONB, allowNull: true },
     comments: {
       type: DataTypes.STRING,
       defaultValue: 0,
     },
     likes: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
+      type: DataTypes.JSONB,
+      allowNull: true,
     },
     userId: {
       type: DataTypes.INTEGER,

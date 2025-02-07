@@ -1,5 +1,5 @@
 import { sequelize } from "../../../db/connection.js"
-import { Reminder, User, Car } from "../../../db/index.js"
+import { Reminder, User, Car, Community } from "../../../db/index.js"
 import { AppError } from "../../utils/appError.js"
 import { messages } from "../../utils/constant/messages.js"
 import { sendEmail } from "../../utils/email.js"
@@ -299,3 +299,26 @@ return res.status(200).json({
 
 
 //TODO WORKER RATE, WINCH RATE 🤔
+
+// user can make like&dislike
+export const LikePost = async(req,res,next)=>{
+    const userId = req.authUser.id; // Get user ID from authenticated request
+    const { postId } = req.params;
+  
+    const post = await Community.findByPk(postId);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+  
+    let updatedLikes = post.likes || [];
+  
+    if (updatedLikes.includes(userId)) {
+      // Unlike: Remove userId from likes array
+      updatedLikes = updatedLikes.filter((id) => id !== userId);
+    } else {
+      // Like: Add userId to likes array
+      updatedLikes.push(userId);
+    }
+  
+    await post.update({ likes: updatedLikes });
+  
+    res.json({ message: "Like status updated", likes: updatedLikes });
+}

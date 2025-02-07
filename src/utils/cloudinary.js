@@ -36,16 +36,12 @@ export const deleteFromCloudinary = async (imageUrl) => {
         const folderPath = urlParts.slice(7).join("/"); // Extract path after Cloudinary domain
         const publicId = `${folderPath}/${filenameWithExt.split(".")[0]}`; // Remove extension
 
-        console.log(`Deleting from Cloudinary: ${publicId}`);
-
         // Delete image
-        const result = await cloudinary.v2.uploader.destroy(publicId);
+        const result = await cloudinary.uploader.destroy(publicId);
         if (result.result !== "ok") {
-            console.error("Cloudinary deletion failed:", result);
             throw new Error("Cloudinary image deletion failed");
         }
     } catch (error) {
-        console.error("Error deleting from Cloudinary:", error);
         throw new Error("Cloudinary API error");
     }
 };
