@@ -13,7 +13,7 @@ User.init(
     phone: { type: DataTypes.STRING }, //TODO : add phone number validation ON SELLER(required to seller)
     profilePhoto: { type: DataTypes.STRING },
     status: { type: DataTypes.ENUM('verified', 'pending', 'blocked'), defaultValue: 'pending' },
-    role: { type: DataTypes.ENUM('seller', 'worker', 'admin', 'customer'), allowNull: false },
+    role: { type: DataTypes.ENUM('seller', 'worker', 'admin', 'customer', 'superadmin'), allowNull: false },
     isActive: { type: DataTypes.BOOLEAN, defaultValue: false },
     otp: { type: DataTypes.INTEGER },
     otpExpiry: { type: DataTypes.DATE },

@@ -11,11 +11,6 @@ Community.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    postId: {
-      type: DataTypes.STRING, 
-      allowNull: false,
-      unique: true,
-    },
     postContent: {
       type: DataTypes.TEXT,
       allowNull: false,
@@ -31,6 +26,14 @@ Community.init(
     likes: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: User,
+        key: 'id',
+      },
     },
   },
   {

@@ -1,5 +1,6 @@
 import { sequelize } from "../../../db/connection.js";
 import { User, Worker } from "../../../db/index.js"
+import Seller from "../../../db/models/seller.model.js";
 import { AppError } from "../../utils/appError.js"
 import { messages } from "../../utils/constant/messages.js"
 import { sendEmail, sendEmailForgetPassword } from "../../utils/email.js";
@@ -53,6 +54,16 @@ export const signup = async (req, res, next) => {
     }
     //remove password from response
     newUser.password = undefined
+
+    // if the role is seller add to user with role seller 
+    if (newUser.role === 'seller') {
+        await Seller.create({
+            id: newUser.id,
+            rating: rating || 0
+        }, { transaction });
+    }   // Commit the transaction
+    // await transaction.commit();
+
 
     //create token
     if (newUser.role === 'customer') {

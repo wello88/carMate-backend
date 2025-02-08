@@ -4,13 +4,13 @@ import { messages } from "../utils/constant/messages.js"
 
 export const isActive = () => {
     return async (req, res, next) => {
-        const userId = req.authUser._id
-        const user = await User.findById(userId)
+        const userId = req.authUser.id
+        const user = await User.findByPk(userId)
         if (!user) {
-            return next(new AppError(messages.user.notFound, 404))
+            return next(new AppError(messages.user.notfound, 404))
         }
         if (user.isActive === false) {
-            return next(new AppError(messages.user.notActive, 400))
+            return next(new AppError(messages.user.notverified, 400))
         }
         next()
     }

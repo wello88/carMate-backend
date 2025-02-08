@@ -48,7 +48,7 @@ Winch.init(
     sequelize,
     modelName: 'Winch',
     tableName: 'winch',
-    timestamps: true, // للإضافة التلقائية createdAt و updatedAt
+    timestamps: true,
   }
 )
 

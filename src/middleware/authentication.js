@@ -1,6 +1,6 @@
 import { User } from "../../db/index.js";
 import { AppError } from "../utils/appError.js";
-import { status } from "../utils/constant/enums.js";
+import { statusEnum } from "../utils/constant/enums.js";
 import { messages } from "../utils/constant/messages.js";
 import { verifyToken } from "../utils/token.js";
 
@@ -11,29 +11,25 @@ export const isAuthenticated = () => {
             return next(new AppError('token required', 401));
         }
 
-        let payload = null;
         try {
-            payload = verifyToken({ token });
-        } catch (err) {
-            return next(new AppError(err.message, 500));
-        }
-
-        if (!payload?.id) {
-            return next(new AppError('invalid payload', 401));
-        }
-
-        try {
-            const user = await User.findByPk(payload.id); // Sequelize equivalent of findById
-            if (!user) {
-                return next(new AppError(messages.user.notfound, 401));
+            const payload = verifyToken({ token });
+            if (!payload?.id) {
+                return next(new AppError('invalid payload', 401));
             }
+
+            const user = await User.findByPk(payload.id);
+            if (!user) {
+                return next(new AppError('User not found', 401));
+            }
+
+            // Set the authenticated user in req
             req.authUser = user;
             next();
         } catch (error) {
-            return next(new AppError(error.message, 500));
+            return next(new AppError('Authentication failed', 401));
         }
-    };
-};
+    }
+}
 
 export const isAuthorized = (roles = []) => {
     return async (req, res, next) => {

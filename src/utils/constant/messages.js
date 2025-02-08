@@ -18,9 +18,11 @@ const genrateMessage = (entity)=>({
     invalidAmount:'invalid amount',
     outOfStock:'out of stock',
     otpAlreadySent:'otp already sent',
+    logoutsuccessfully:'logout successfully',
 })
 export const messages = {
     user:genrateMessage('user'),
+    seller:genrateMessage('seller'),
     category:genrateMessage('category'),
     subcategory:genrateMessage('subcategory'),
     Brand:genrateMessage('Brand'),
