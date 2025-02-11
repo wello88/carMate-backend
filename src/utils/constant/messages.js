@@ -18,6 +18,8 @@ const genrateMessage = (entity)=>({
     invalidAmount:'invalid amount',
     outOfStock:'out of stock',
     otpAlreadySent:'otp already sent',
+    contentRequired:'content is required',
+    notFound:`${entity} not found`,
     logoutsuccessfully:'logout successfully',
 })
 export const messages = {
@@ -35,4 +37,5 @@ export const messages = {
     car:genrateMessage('car'),
     winch:genrateMessage('winch'),
     reminder:genrateMessage('reminder'),
+    post:genrateMessage('post'),
 }

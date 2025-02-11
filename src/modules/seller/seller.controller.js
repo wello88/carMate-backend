@@ -189,6 +189,7 @@ export const DeleteProduct = async (req, res, next) => {
         }
 
         if (product.subImages && product.subImages.length > 0) {
+            
 
             await Promise.all(product.subImages.map(async (url) => await deleteFromCloudinary(url)));
         }

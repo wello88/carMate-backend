@@ -15,17 +15,14 @@ Community.init(
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    images: {
-      type: DataTypes.JSONB, 
-      allowNull: true,
-    },
+    images: { type: DataTypes.JSONB, allowNull: true },
     comments: {
       type: DataTypes.STRING,
       defaultValue: 0,
     },
     likes: {
       type: DataTypes.JSONB,
-      defaultValue: [],
+      allowNull: true,
     },
     userId: {
       type: DataTypes.INTEGER,

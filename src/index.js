@@ -4,6 +4,7 @@ import workerRouter from "./modules/worker/worker.router.js";
 import sellerRouter from "./modules/seller/seller.router.js";
 import adminRouter from "./modules/admin/admin.router.js";
 import superAdminRouter from "./modules/superAdmin/superadmin.router.js"
+import communityRouter from "./modules/community/community.router.js";
 import winchRouter from "./modules/winch/winch.router.js";
 
 
@@ -15,6 +16,7 @@ export {
     sellerRouter,
     adminRouter,
     superAdminRouter,
+    communityRouter,
     winchRouter
 }
 
