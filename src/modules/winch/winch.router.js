@@ -6,22 +6,24 @@ import {
   updateWinch,
   deleteWinch,
 } from './winch.controller.js';
+import { asyncHandler } from '../../utils/appError.js';
+import { isAdmin } from '../../middleware/validation.js';
 
 const router = express.Router();
 
 // إنشاء عنصر جديد
-router.post('/winches', createWinch);
+router.post('/winches',isAdmin,asyncHandler(createWinch) );
 
 // الحصول على جميع العناصر
-router.get('/winches', getAllWinches);
+router.get('/winches' ,asyncHandler(getAllWinches));
 
 // الحصول على عنصر معين بواسطة المعرف
-router.get('/winches/:id', getWinchById);
+router.get('/winches/:id', asyncHandler(getWinchById));
 
 // تحديث عنصر معين بواسطة المعرف
-router.put('/winches/:id', updateWinch);
+router.put('/winches/:id',isAdmin ,asyncHandler(updateWinch));
 
 // حذف عنصر معين بواسطة المعرف
-router.delete('/winches/:id', deleteWinch);
+router.delete('/winches/:id', isAdmin ,asyncHandler(deleteWinch));
 
 export default router;

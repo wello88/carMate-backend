@@ -1,23 +1,22 @@
 import Winch from '../../../db/models/winch.model.js';
-import { ApiFeature } from '../../../src/utils/apiFeature.js'; // تأكد من تعديل مسار الاستيراد حسب موقع الملف
-
-// إنشاء عنصر جديد من نوع Winch
+import { ApiFeature } from '../../../src/utils/apiFeature.js';
+import { hashPassword } from '../../utils/hashAndcompare.js';
 export const createWinch = async (req, res) => {
-  try {
-    const { firstName, lastName, email, password, profilePhoto, area, rating } = req.body;
+    const user = req.authUser.id;
+    if (user.role !== 'admin') {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
+
+    const { firstName, lastName, email, profilePhoto, area, rating } = req.body;
     const newWinch = await Winch.create({
       firstName,
       lastName,
       email,
-      password,
       profilePhoto,
       area,
       rating
     });
     res.status(201).json(newWinch);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
 };
 
 
@@ -39,6 +38,7 @@ export const getAllWinches = async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   };
+  
 
 // الحصول على عنصر Winch بواسطة المعرف
 export const getWinchById = async (req, res) => {

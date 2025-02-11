@@ -23,10 +23,6 @@ Winch.init(
       allowNull: true,
       unique: true,
     },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
     profilePhoto: {
       type: DataTypes.STRING,
       allowNull: true,
