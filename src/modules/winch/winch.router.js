@@ -8,11 +8,12 @@ import {
 } from './winch.controller.js';
 import { asyncHandler } from '../../utils/appError.js';
 import { isAdmin } from '../../middleware/validation.js';
+import { isAuthenticated } from '../../middleware/authentication.js';
 
 const router = express.Router();
 
 // إنشاء عنصر جديد
-router.post('/winches',isAdmin,asyncHandler(createWinch) );
+router.post('/winches',isAuthenticated(),isAdmin,asyncHandler(createWinch) );
 
 // الحصول على جميع العناصر
 router.get('/winches' ,asyncHandler(getAllWinches));
@@ -21,9 +22,9 @@ router.get('/winches' ,asyncHandler(getAllWinches));
 router.get('/winches/:id', asyncHandler(getWinchById));
 
 // تحديث عنصر معين بواسطة المعرف
-router.put('/winches/:id',isAdmin ,asyncHandler(updateWinch));
+router.put('/winches/:id',isAuthenticated(),isAdmin ,asyncHandler(updateWinch));
 
 // حذف عنصر معين بواسطة المعرف
-router.delete('/winches/:id', isAdmin ,asyncHandler(deleteWinch));
+router.delete('/winches/:id',isAuthenticated() ,isAdmin ,asyncHandler(deleteWinch));
 
 export default router;

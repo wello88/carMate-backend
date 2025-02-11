@@ -16,7 +16,7 @@ Community.init(
       allowNull: false,
     },
     images: {
-      type: DataTypes.ARRAY(DataTypes.STRING), 
+      type: DataTypes.JSONB, 
       allowNull: true,
     },
     comments: {
@@ -24,8 +24,8 @@ Community.init(
       defaultValue: 0,
     },
     likes: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
+      type: DataTypes.JSONB,
+      defaultValue: [],
     },
     userId: {
       type: DataTypes.INTEGER,
