@@ -1,5 +1,5 @@
 import { sequelize } from "../../../db/connection.js"
-import { Reminder, User, Car, Community } from "../../../db/index.js"
+import { Reminder, User, Car, Community, Winch } from "../../../db/index.js"
 import { AppError } from "../../utils/appError.js"
 import { messages } from "../../utils/constant/messages.js"
 import { sendEmail } from "../../utils/email.js"
@@ -298,7 +298,20 @@ return res.status(200).json({
 
 
 
-//TODO WORKER RATE, WINCH RATE 🤔
+//TODO  WINCH RATE 🤔
+
+export const RateWinch = async(req,res,next)=>{
+    const userId = req.authUser.id; // Get user ID from authenticated request
+    const { winchId } = req.params;
+    const { rating } = req.body;
+  
+    const winch = await Winch.findByPk(winchId);
+    if (!winch) return res.status(404).json({ message: "Winch not found" });
+  
+    await winch.update({ rating });
+  
+    res.json({ message: "Rating updated", rating: winch.rating });
+}
 
 // user can make like&dislike
 export const LikePost = async(req,res,next)=>{

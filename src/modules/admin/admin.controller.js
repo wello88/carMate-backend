@@ -1,3 +1,4 @@
+import { Op } from "sequelize"
 import { Category, Product, User } from "../../../db/index.js"
 import { ApiFeature } from "../../utils/apiFeature.js"
 import { AppError } from "../../utils/appError.js"
@@ -17,14 +18,21 @@ export const adminLogin = async (req, res, next) => {
         return next(new AppError(messages.user.invalidCreadintials, 401));
     }
 
-    const user = await User.findOne({ where: { email } })
+    const user = await User.findOne({
+        where: {
+            email: email,
+            role: {
+                [Op.or]: ["admin", "superadmin", "seller"]
+            }
+        }
+    })
 
     if (!user) {
         return next(new AppError(messages.user.notfound, 404));
     }
 
-    if (user.role !== 'admin') {
-        return next(new AppError(messages.user.notfound, 404));
+    if (!["admin", "superadmin", "seller"].includes(user.role)) {
+        return next(new AppError(messages.user.notauthorized, 403));
     }
 
     // Compare passwords

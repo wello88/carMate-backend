@@ -9,7 +9,7 @@ const adminRouter = Router();
 //ADD CATEGORY
 adminRouter.post('/addCategory',isAuthenticated(),isAdmin,asyncHandler(AddCategory))
 //LOGIN TO ADMIN PANEL
-adminRouter.post('/login/admin/145461456',isAuthenticated(),isAdmin,asyncHandler(adminLogin))
+adminRouter.post('/login/admin/145461456',isAuthenticated(),asyncHandler(adminLogin))
 //LOGOUT
 adminRouter.post('/logout',isAuthenticated(),asyncHandler(adminLogout))
 //ADD USER 
