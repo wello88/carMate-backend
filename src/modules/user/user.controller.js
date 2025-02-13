@@ -298,7 +298,6 @@ return res.status(200).json({
 
 
 
-//TODO  WINCH RATE 🤔
 
 export const RateWinch = async(req,res,next)=>{
     const userId = req.authUser.id; // Get user ID from authenticated request

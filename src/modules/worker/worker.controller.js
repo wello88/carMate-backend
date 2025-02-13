@@ -25,7 +25,7 @@ export const GetWrokers = async (req, res) => {
 
 }
 
-//TODO WORKER UPDATE HIS PROFILE
+//WORKER UPDATE HIS PROFILE
 
 export const UpdateWorkerProfile = async(req,res,next)=>{
     const userId=req.authUser.id
