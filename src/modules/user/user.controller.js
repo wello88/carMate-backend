@@ -1,5 +1,6 @@
 import { sequelize } from "../../../db/connection.js"
 import { Reminder, User, Car, Community, Winch } from "../../../db/index.js"
+import Review from "../../../db/models/review.model.js"
 import { AppError } from "../../utils/appError.js"
 import { messages } from "../../utils/constant/messages.js"
 import { sendEmail } from "../../utils/email.js"
@@ -298,20 +299,34 @@ return res.status(200).json({
 
 
 
-//TODO  WINCH RATE 🤔
-
-export const RateWinch = async(req,res,next)=>{
-    const userId = req.authUser.id; // Get user ID from authenticated request
-    const { winchId } = req.params;
-    const { rating } = req.body;
+export const RateWinch = async (req, res) => {
+    try {
+      const { rating, comment } = req.body
+      const {winchId}= req.params
+      const userId = req.authUser.id
+    
+      // Validate rating value
+      if (rating < 0 || rating > 5) {
+        return res.status(400).json({ message: 'Rating must be between 0 and 5' })
+      }
   
-    const winch = await Winch.findByPk(winchId);
-    if (!winch) return res.status(404).json({ message: "Winch not found" });
+      // Check if the winch exists
+      const winch = await Winch.findByPk(winchId)
+      if (!winch) {
+        return res.status(404).json({ message: 'Winch not found' })
+      }
   
-    await winch.update({ rating });
+      // Create a new review
+      const newReview = await Review.create({ winchId, userId, rating, comment })
   
-    res.json({ message: "Rating updated", rating: winch.rating });
-}
+      // Update winch rating
+      await Winch.calculateRating(winchId)
+  
+      return res.status(201).json({ message: 'Review added successfully', review: newReview })
+    } catch (error) {
+      return res.status(500).json({ message: 'Internal Server Error', error: error.message })
+    }
+  }
 
 // user can make like&dislike
 export const LikePost = async(req,res,next)=>{

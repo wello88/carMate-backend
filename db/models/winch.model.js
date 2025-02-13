@@ -1,7 +1,19 @@
-import { Model, DataTypes } from 'sequelize'
+import { Model, DataTypes, Sequelize } from 'sequelize'
 import { sequelize } from '../connection.js'
+import Review from './review.model.js'
 
-class Winch extends Model {}
+class Winch extends Model {
+  static async calculateRating(winchId) {
+    const result = await Review.findOne({
+      attributes: [[Sequelize.fn('AVG', Sequelize.col('rating')), 'averageRating']],
+      where: { winchId },
+    })
+
+    const avgRating = result?.dataValues?.averageRating || 0
+    await Winch.update({ rating: avgRating }, { where: { id: winchId } })
+    return avgRating
+  }
+}
 
 Winch.init(
   {
@@ -31,7 +43,7 @@ Winch.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    rating: { //TODO RATING EQUITION
+    rating: { 
       allowNull: true,
       type: DataTypes.FLOAT,
       validate: {
