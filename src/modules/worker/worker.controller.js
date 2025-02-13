@@ -1,5 +1,6 @@
 import { User, Worker } from "../../../db/index.js"
 import  {ApiFeature}  from "../../utils/apiFeature.js"
+import { messages } from "../../utils/constant/messages.js";
 
 export const GetWrokers = async (req, res) => {
     const apiFetures = new ApiFeature(Worker, req.query)
@@ -21,5 +22,48 @@ export const GetWrokers = async (req, res) => {
         return res.status(404).json({ message: "No workers found" })
     }
     return res.status(200).json(result)
+
+}
+
+//TODO WORKER UPDATE HIS PROFILE
+
+export const UpdateWorkerProfile = async(req,res,next)=>{
+    const userId=req.authUser.id
+
+    const {firstName,lastname,email,phone,profilePhoto,location,specification}=req.body
+
+    const user = await User.findByPk(userId)
+    if (!user){
+        return next(new AppError(messages.user.notfound,404))
+    }
+
+    if (firstName){
+        user.firstName=firstName
+    }
+    if (lastname){
+        user.lastName=lastname
+    }
+    if (email){
+        user.email=email
+    }
+    if (phone){
+        user.phone=phone
+    }
+    if (profilePhoto){
+        user.profilePhoto=profilePhoto
+    }
+    if (location){
+        user.location=location
+    }
+    if (specification){
+        user.specification=specification
+    }
+    await user.save()
+
+    return res.status(200).json({
+        message:messages.user.updateSuccessfully,
+        success:true
+    })
+
 
 }

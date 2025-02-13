@@ -31,9 +31,9 @@ Winch.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    rating: {
+    rating: { //TODO RATING EQUITION
+      allowNull: true,
       type: DataTypes.FLOAT,
-      defaultValue: 0,
       validate: {
         min: 0,
         max: 5,
