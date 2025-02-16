@@ -3,12 +3,25 @@ import express from "express"
 import authRouter from "./src/modules/auth/auth.router.js"
 import path from "path"
 import { fileURLToPath } from 'url'
+import cors from "cors";
+
 
 
 import { initApp } from "./src/initApp.js"
 import { syncDatabase } from "./db/index.js"
 
 const app = express()
+// Enable CORS for all origins
+app.use(cors());
+
+
+// Optionally, configure CORS with more control
+app.use(cors({
+    origin: "*", // Allows all origins
+    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
+    allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
+}));
+
 
 // Get directory name in ES module
 const __filename = fileURLToPath(import.meta.url);
