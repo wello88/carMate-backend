@@ -51,10 +51,11 @@ export const adminLogin = async (req, res, next) => {
     await user.save()
 
     const token = genrateToken({ payload: { id: user.id, email, role: user.role } });
+    const role = user.role
     res.status(200).json({
         status: messages.user.loginSuccessfully,
         data: {
-            token
+            token, role
         }
     })
 
