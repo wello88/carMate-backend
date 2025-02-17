@@ -1,20 +1,21 @@
 import { User, Worker } from "../../../db/index.js"
-import  {ApiFeature}  from "../../utils/apiFeature.js"
+import { ApiFeature } from "../../utils/apiFeature.js"
+import { AppError } from "../../utils/appError.js";
 import { uploadToCloudinary } from "../../utils/cloudinary.js";
 import { messages } from "../../utils/constant/messages.js";
 
 export const GetWrokers = async (req, res) => {
     const apiFetures = new ApiFeature(Worker, req.query)
-    .pagination()
-    .filter()
-    .sort()
-    .select()
+        .pagination()
+        .filter()
+        .sort()
+        .select()
 
-     // Modify API features to include the User model in the query
-     apiFetures.options.include.push({
+    // Modify API features to include the User model in the query
+    apiFetures.options.include.push({
         model: User,
         as: "User", // Must match the alias used in Worker.belongsTo()
-        attributes: ["id", "firstName", "lastName" ,"email", "phone", "profilePhoto",], // Select user fields
+        attributes: ["id", "firstName", "lastName", "email", "phone", "profilePhoto",], // Select user fields
     });
 
     const result = await apiFetures.execute();
@@ -28,33 +29,33 @@ export const GetWrokers = async (req, res) => {
 
 // WORKER UPDATE HIS PROFILE
 
-export const UpdateWorkerProfile = async(req,res,next)=>{
-    const userId=req.authUser.id
+export const UpdateWorkerProfile = async (req, res, next) => {
+    const userId = req.authUser.id
 
-    const {firstName,lastname,email,phone,profilePhoto,location,specification}=req.body
+    const { firstName, lastname, email, phone, profilePhoto, location, specification } = req.body
 
     const user = await User.findByPk(userId)
-    if (!user){
-        return next(new AppError(messages.user.notfound,404))
+    if (!user) {
+        return next(new AppError(messages.user.notfound, 404))
     }
 
-    if (firstName){
-        user.firstName=firstName
+    if (firstName) {
+        user.firstName = firstName
     }
-    if (lastname){
-        user.lastName=lastname
+    if (lastname) {
+        user.lastName = lastname
     }
-    if (email){
-        user.email=email
+    if (email) {
+        user.email = email
     }
-    if (phone){
-        user.phone=phone
+    if (phone) {
+        user.phone = phone
     }
-    if (location){
-        user.location=location
+    if (location) {
+        user.location = location
     }
-    if (specification){
-        user.specification=specification
+    if (specification) {
+        user.specification = specification
     }
     // handle image upload
     if (req.files.profilePhoto) {
@@ -69,9 +70,43 @@ export const UpdateWorkerProfile = async(req,res,next)=>{
     await user.save()
 
     return res.status(200).json({
-        message:messages.user.updateSuccessfully,
-        success:true
+        message: messages.user.updateSuccessfully,
+        success: true
     })
 
+
+}
+
+
+//get specific user with id in params
+
+export const getSpecificWorker = async (req, res, next) => {
+
+    const userId = req.params.id
+
+    const user = await User.findByPk(userId)
+    const worker = await Worker.findOne({ where: { id: userId } })
+
+    if (!user) {
+        return next(new AppError(messages.user.notfound, 404));
+    }
+
+    if (user.role !== 'worker') {
+        return next(new AppError(messages.user.notfound, 404))
+    }
+
+    user.password = undefined
+    user.isActive = undefined
+    user.otp = undefined
+    user.otpExpiry = undefined
+    user.otpAttempts = undefined
+    user.createdAt = undefined
+    user.updatedAt = undefined
+
+    res.status(200).json({
+        status: messages.user.getsuccessfully,
+        data: {user, worker}
+
+    })
 
 }

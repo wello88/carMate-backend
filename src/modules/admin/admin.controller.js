@@ -231,6 +231,26 @@ export const deleteUser = async (req, res, next) => {
     })
 }
 
+
+//get specific user with id in params
+
+export const getSpecificUser = async(req,res,next)=>{
+
+    const userId=req.params.id
+    const user = await User.findByPk(userId)
+    if (!user) {
+        return next(new AppError(messages.user.notfound, 404));
+    }
+    res.status(200).json({
+        status:messages.user.getsuccessfully,
+        data:user
+    })
+
+}
+
+
+
+
 //admin get all users with role customer
 export const getAllCustomerUsers = async (req, res, next) => {
     const apiFeatures = new ApiFeature(User, req.query)
