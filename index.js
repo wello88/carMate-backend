@@ -1,6 +1,5 @@
 // import dotenv from "dotenv"
 import express from "express"
-import authRouter from "./src/modules/auth/auth.router.js"
 import path from "path"
 import { fileURLToPath } from 'url'
 import cors from "cors";

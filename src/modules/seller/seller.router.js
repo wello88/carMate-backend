@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { asyncHandler } from "../../utils/appError.js";
-import { AddProduct, DeleteProduct, GetCategories, GetProducts, GetSellerProducts, UpdateProduct } from "./seller.controller.js";
+import { AddProduct, DeleteProduct, GetCategories, GetProducts, GetSellerProducts, GetSpecificProduct, UpdateProduct } from "./seller.controller.js";
 import { isAuthenticated } from "../../middleware/authentication.js";
 import { cloudupload } from "../../utils/multer.cloud.js";
 
@@ -21,6 +21,11 @@ SellerRouter.get('/getownedProducts',
     asyncHandler(GetSellerProducts)
 )
 
+
+//get specific product with it's created by id data 
+SellerRouter.get('/getSpecificProduct/:id',
+    asyncHandler(GetSpecificProduct)
+)
 
 //update product
 SellerRouter.put('/updateProduct/:id',

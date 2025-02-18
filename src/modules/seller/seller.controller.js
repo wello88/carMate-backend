@@ -1,4 +1,4 @@
-import { Category, Product } from "../../../db/index.js";
+import { Category, Product, User } from "../../../db/index.js";
 import { AppError } from "../../utils/appError.js";
 import { messages } from "../../utils/constant/messages.js";
 import { uploadToCloudinary } from "../../utils/cloudinary.js";
@@ -167,6 +167,24 @@ export const GetSellerProducts = async (req, res, next) => {
     });
 };
 
+//get specific product with it's created by id data 
+export const GetSpecificProduct = async (req, res, next) => {
+
+    const { id } = req.params; // Get product ID from URL
+    const product = await Product.findByPk(id);
+    const seller = await User.findByPk(product.createdBy,{
+        attributes: ['id', 'firstName', 'lastName', 'email','profilePhoto', 'phone' ] // Select specific fields
+    });
+    if (!product) {
+        return next(new AppError(messages.product.notfound, 404));
+    }
+    return res.status(200).json({
+        status: "success",
+        data: { product , seller }
+    })
+
+
+}
 
 //delete owned product
 export const DeleteProduct = async (req, res, next) => {

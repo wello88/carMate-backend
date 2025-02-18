@@ -28,7 +28,7 @@ export const adminLogin = async (req, res, next) => {
     })
 
     if (!user) {
-        return next(new AppError(messages.user.notfound, 404));
+        return next(new AppError("User not found OR Unauthorized", 404));
     }
 
     if (!["admin", "superadmin", "seller"].includes(user.role)) {
