@@ -172,12 +172,13 @@ export const GetSpecificProduct = async (req, res, next) => {
 
     const { id } = req.params; // Get product ID from URL
     const product = await Product.findByPk(id);
-    const seller = await User.findByPk(product.createdBy,{
-        attributes: ['id', 'firstName', 'lastName', 'email','profilePhoto', 'phone' ] // Select specific fields
-    });
+
     if (!product) {
         return next(new AppError(messages.product.notfound, 404));
     }
+    const seller = await User.findByPk(product.createdBy,{
+        attributes: ['id', 'firstName', 'lastName', 'email','profilePhoto', 'phone' ] // Select specific fields
+    });
     return res.status(200).json({
         status: "success",
         data: { product , seller }
