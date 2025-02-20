@@ -11,5 +11,7 @@ workerRouter.get("/workers", asyncHandler(GetWrokers));
 workerRouter.put('/update-worker-profile',
     isAuthenticated(),
     cloudupload().fields([{ name: 'profilePhoto', maxCount: 1 }]), asyncHandler(UpdateWorkerProfile))
+
+    
 workerRouter.get("/worker/:id", asyncHandler(getSpecificWorker));
 export default workerRouter;

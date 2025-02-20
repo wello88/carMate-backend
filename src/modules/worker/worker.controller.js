@@ -1,3 +1,4 @@
+import { DATE } from "sequelize";
 import { User, Worker } from "../../../db/index.js"
 import { ApiFeature } from "../../utils/apiFeature.js"
 import { AppError } from "../../utils/appError.js";
@@ -32,12 +33,17 @@ export const GetWrokers = async (req, res) => {
 export const UpdateWorkerProfile = async (req, res, next) => {
     const userId = req.authUser.id
 
-    const { firstName, lastname, email, phone, profilePhoto, location, specification } = req.body
+    const { firstName, lastname, email, phone, profilePhoto, location, specialization } = req.body
 
     const user = await User.findByPk(userId)
     if (!user) {
         return next(new AppError(messages.user.notfound, 404))
     }
+
+    if (user.role !== 'worker') {
+        return next(new AppError(messages.user.notfound, 404))
+    }
+    const worker = await Worker.findOne({ where: { id: userId } })
 
     if (firstName) {
         user.firstName = firstName
@@ -52,10 +58,14 @@ export const UpdateWorkerProfile = async (req, res, next) => {
         user.phone = phone
     }
     if (location) {
-        user.location = location
+        worker.location = location
+     await worker.save()
+    
     }
-    if (specification) {
-        user.specification = specification
+    if (specialization) {
+        worker.specialization = specialization
+        await worker.save()
+
     }
     // handle image upload
     if (req.files.profilePhoto) {
@@ -68,10 +78,12 @@ export const UpdateWorkerProfile = async (req, res, next) => {
         user.profilePhoto = profilePhotoUrls;
     }
     await user.save()
+    
 
     return res.status(200).json({
         message: messages.user.updateSuccessfully,
-        success: true
+        success: true,
+        data: {user,worker}
     })
 
 
