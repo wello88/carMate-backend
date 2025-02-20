@@ -5,7 +5,9 @@ export const signupSchema = Joi.object({
     firstName: Joi.string().min(2).max(50).required(),
     lastName: Joi.string().min(2).max(50).required(),
     email: Joi.string().email().required(),
-    password: Joi.string().min(6).max(100).required(),
+    password: Joi.string().min(6).max(100) 
+    .pattern(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&#])[A-Za-z\\d@$!%*?&#]{6,100}$"))
+    .required(),
     phone: Joi.string().pattern(/^[0-9]{10,15}$/).optional(),
     role: Joi.string().valid("customer", "worker", "seller").required(),
     specialization: Joi.string().min(2).max(100).when("role", {
@@ -48,8 +50,18 @@ export const validateRequest = (schema) => (req, res, next) => {
         return res.status(400).json({
             success: false,
             message: "Validation Error",
-            errors: error.details.map((err) => err.message),
+            // errors: error.details.map((err) => err.message),
         });
     }
     next();
 };
+
+
+export const validateLogin = Joi.object({
+    email: Joi.string().email().max(150).required(),
+    password: Joi.string()
+        .min(6)
+        .max(100)
+        .required(),
+});
+
