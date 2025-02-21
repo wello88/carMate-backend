@@ -224,33 +224,38 @@ export const forgetPassword = async (req, res, next) => {
 
     const currentTime = Date.now();
 
+    // Check if there's a previous OTP request and enforce 30-second cooldown
+    if (userExist.lastOtpRequest) {
+        const lastRequestTime = new Date(userExist.lastOtpRequest).getTime();
+        const timeSinceLastRequest = currentTime - lastRequestTime;
+
+        if (timeSinceLastRequest < 30 * 1000) {
+            const remainingTime = Math.ceil((30 * 1000 - timeSinceLastRequest) / 1000);
+            return next(new AppError(`Please wait ${remainingTime} seconds before requesting a new OTP`, 429));
+        }
+    }
+
     // If OTP exists, check its status
     if (userExist.otp && userExist.otpExpiry) {
         const otpExpiryTime = new Date(userExist.otpExpiry).getTime();
-        const otpCreationTime = otpExpiryTime - (15 * 60 * 1000); // OTP validity is 15 minutes
-        const timeSinceLastOTP = currentTime - otpCreationTime;
-
-        // If OTP is still valid (not expired)
+        
+        // If OTP is still valid (not expired), inform the user
         if (otpExpiryTime > currentTime) {
             return next(new AppError(messages.user.otpAlreadySent, 400));
         }
-        // Check cooldown period (30 seconds since last OTP creation)
-        if (timeSinceLastOTP < 30 * 1000) {
-            const remainingTime = Math.ceil((30 * 1000 - timeSinceLastOTP) / 1000);
-            return next(new AppError(`Please wait ${remainingTime} seconds before requesting a new OTP`, 429));
-        }
-        // If OTP is expired and cooldown is over, proceed to generate new OTP
+        // If OTP is expired, we can proceed to generate a new one after cooldown
     }
 
     // Generate and set OTP
     const otp = generateOTP();
 
     try {
-        // Update user with new OTP
+        // Update user with new OTP and last request time
         await userExist.update({
             otp: otp,
             otpExpiry: new Date(currentTime + 15 * 60 * 1000), // 15-minute expiry
-            otpAttempts: 0
+            otpAttempts: 0,
+            lastOtpRequest: new Date(currentTime) // Track the time of this OTP request
         });
 
         await sendEmailForgetPassword({
@@ -269,7 +274,8 @@ export const forgetPassword = async (req, res, next) => {
         await userExist.update({
             otp: null,
             otpExpiry: null,
-            otpAttempts: 0
+            otpAttempts: 0,
+            lastOtpRequest: null // Reset last request time on failure
         });
         return next(new AppError('Failed to send email', 500));
     }
