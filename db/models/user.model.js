@@ -21,6 +21,7 @@ User.init(
     otp: { type: DataTypes.INTEGER },
     otpExpiry: { type: DataTypes.DATE },
     otpAttempts: { type: DataTypes.INTEGER, defaultValue: 0 },
+    otpVerified: { type: DataTypes.BOOLEAN, defaultValue: false, allowNull: true },
   },
   { sequelize, modelName: 'User', tableName: 'users', timestamps: true }
 );

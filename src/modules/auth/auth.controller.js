@@ -190,77 +190,165 @@ export const forgetPassword = async (req, res, next) => {
 
 
 // changPassword
-export const changPassword = async (req, res, next) => {
-    const { otp, newPassword, email } = req.body;
+// export const changPassword = async (req, res, next) => {
+//     const { otp, newPassword, email } = req.body;
 
-    // Check if the user exists
+//     // Check if the user exists
+//     const user = await User.findOne({ where: { email } });
+//     if (!user) {
+//         return next(new AppError(messages.user.notfound, 404));
+//     }
+
+//     // Ensure OTP and newPassword are strings
+//     const otpString = otp.toString();
+//     const storedOtpString = user.otp ? user.otp.toString() : '';
+
+//     // Check if OTP is valid
+//     if (storedOtpString !== otpString) {
+//         // Using Sequelize increment for otpAttempts
+//         await user.increment('otpAttempts', { by: 1 });
+//         await user.reload(); // Reload to get updated value
+
+//         // If OTP attempts exceed 3
+//         if (user.otpAttempts > 3) {
+//             await user.update({
+//                 otp: null,
+//                 otpExpiry: null,
+//                 otpAttempts: null
+//             });
+
+//             return next(new AppError('Maximum OTP attempts exceeded. Please request a new OTP.', 403));
+//         }
+
+//         if (user.otpAttempts !== null) {
+//             return next(new AppError(`invalid otp you have only ${4 - user.otpAttempts} attemps left`, 401));
+//         }
+//         return next(new AppError(`request new OTP`, 401));
+//     }
+
+//     // Check if OTP is expired
+//     if (user.otpExpiry < Date.now()) {
+//         const secondOTP = generateOTP();
+
+//         await user.update({
+//             otp: secondOTP,
+//             otpExpiry: Date.now() + 5 * 60 * 1000,
+//             otpAttempts: 0
+//         });
+
+//         await sendEmail({
+//             to: email,
+//             subject: 'Resent OTP',
+//             html: `<h1>Your new OTP is ${secondOTP}</h1>`
+//         });
+
+//         return res.status(200).json({
+//             message: "Check your email",
+//             success: true
+//         });
+//     }
+
+//     // Hash new password
+//     const hashedPassword = hashPassword({ password: newPassword });
+
+//     // Update password and reset OTP data using Sequelize
+//     await user.update({
+//         password: hashedPassword,
+//         otp: null,
+//         otpExpiry: null,
+//         otpAttempts: null
+//     });
+
+//     return res.status(200).json({
+//         message: 'Password updated successfully',
+//         success: true
+//     });
+// };
+
+
+
+// Verify OTP and handle OTP requests
+export const verifyOtp = async (req, res, next) => {
+    const { otp, email } = req.body;
+
     const user = await User.findOne({ where: { email } });
     if (!user) {
         return next(new AppError(messages.user.notfound, 404));
     }
 
-    // Ensure OTP and newPassword are strings
     const otpString = otp.toString();
     const storedOtpString = user.otp ? user.otp.toString() : '';
 
-    // Check if OTP is valid
-    if (storedOtpString !== otpString) {
-        // Using Sequelize increment for otpAttempts
-        await user.increment('otpAttempts', { by: 1 });
-        await user.reload(); // Reload to get updated value
+    const currentTime = Date.now();
+    const otpExpiryTime = user.otpExpiry ? user.otpExpiry : 0;
+    const otpCooldownTime = user.lastOtpRequest ? user.lastOtpRequest : 0;
 
-        // If OTP attempts exceed 3
-        if (user.otpAttempts > 3) {
-            await user.update({
-                otp: null,
-                otpExpiry: null,
-                otpAttempts: null
-            });
+    // Check if OTP is valid (within 5 min)
+    if (otpExpiryTime > currentTime) {
+        if (storedOtpString !== otpString) {
+            await user.increment('otpAttempts', { by: 1 });
+            await user.reload();
 
-            return next(new AppError('Maximum OTP attempts exceeded. Please request a new OTP.', 403));
+            if (user.otpAttempts > 3) {
+                await user.update({ otp: null, otpExpiry: null, otpAttempts: null, lastOtpRequest: null });
+                return next(new AppError('Maximum OTP attempts exceeded. Please request a new OTP.', 403));
+            }
+
+            return next(new AppError(`Invalid OTP. You have only ${4 - user.otpAttempts} attempts left`, 401));
         }
 
-        if (user.otpAttempts !== null) {
-            return next(new AppError(`invalid otp you have only ${4 - user.otpAttempts} attemps left`, 401));
-        }
-        return next(new AppError(`request new OTP`, 401));
+        // OTP is valid → Reset OTP attempts & store verified status
+        await user.update({ otpAttempts: 0, otp: null, otpExpiry: null, otpVerified: true });
+
+        return res.status(200).json({ message: 'OTP verified successfully', success: true });
     }
 
-    // Check if OTP is expired
-    if (user.otpExpiry < Date.now()) {
-        const secondOTP = generateOTP();
+    // OTP expired → Check cooldown for new OTP
+    if (currentTime - otpCooldownTime < 30 * 1000) {
+        return next(new AppError(`You must wait ${Math.ceil((30 * 1000 - (currentTime - otpCooldownTime)) / 1000)} seconds before requesting a new OTP.`, 429));
+    }
 
-        await user.update({
-            otp: secondOTP,
-            otpExpiry: Date.now() + 5 * 60 * 1000,
-            otpAttempts: 0
-        });
+    // Generate a new OTP
+    const newOtp = generateOTP();
+    await user.update({
+        otp: newOtp,
+        otpExpiry: currentTime + 5 * 60 * 1000, // Valid for 5 min
+        otpAttempts: 0,
+        lastOtpRequest: currentTime
+    });
 
-        await sendEmail({
-            to: email,
-            subject: 'Resent OTP',
-            html: `<h1>Your new OTP is ${secondOTP}</h1>`
-        });
+    await sendEmail({
+        to: email,
+        subject: 'Resent OTP',
+        html: `<h1>Your new OTP is ${newOtp}</h1>`
+    });
 
-        return res.status(200).json({
-            message: "Check your email",
-            success: true
-        });
+    return res.status(200).json({ message: "Check your email for the new OTP", success: true });
+};
+
+// Reset Password (Requires OTP Verification)
+export const resetPassword = async (req, res, next) => {
+    const { newPassword, email } = req.body;
+
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+        return next(new AppError(messages.user.notfound, 404));
+    }
+
+    // Ensure OTP was verified before allowing password reset
+    if (!user.otpVerified) {
+        return next(new AppError('OTP verification required before resetting password.', 403));
     }
 
     // Hash new password
     const hashedPassword = hashPassword({ password: newPassword });
 
-    // Update password and reset OTP data using Sequelize
+    // Update password & reset OTP verification flag
     await user.update({
         password: hashedPassword,
-        otp: null,
-        otpExpiry: null,
-        otpAttempts: null
+        otpVerified: false,
+        lastOtpRequest: null
     });
 
-    return res.status(200).json({
-        message: 'Password updated successfully',
-        success: true
-    });
+    return res.status(200).json({ message: 'Password updated successfully', success: true });
 };
