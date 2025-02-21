@@ -233,17 +233,7 @@ export const forgetPassword = async (req, res, next) => {
             const remainingTime = Math.ceil((30 * 1000 - timeSinceLastRequest) / 1000);
             return next(new AppError(`Please wait ${remainingTime} seconds before requesting a new OTP`, 429));
         }
-    }
-
-    // If OTP exists, check its status
-    if (userExist.otp && userExist.otpExpiry) {
-        const otpExpiryTime = new Date(userExist.otpExpiry).getTime();
-        
-        // If OTP is still valid (not expired), inform the user
-        if (otpExpiryTime > currentTime) {
-            return next(new AppError(messages.user.otpAlreadySent, 400));
-        }
-        // If OTP is expired, we can proceed to generate a new one after cooldown
+        // If 30 seconds have passed, proceed to generate a new OTP regardless of existing OTP status
     }
 
     // Generate and set OTP
