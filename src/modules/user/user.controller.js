@@ -51,7 +51,7 @@ export const GetMyProfile = async (req, res, next) => {
 export const UpdateMyProfile = async (req, res, next) => {
 
     const userId = req.authUser.id
-    const { firstName, lastname, email, phone, profilePhoto, specialization, location } = req.body
+    const { firstName, lastName, email, phone, profilePhoto, specialization, location } = req.body
     const user = await User.findByPk(userId)
     const emailExistance = email ? await User.findOne({ where: { email } }) : null;
     const worker = await Worker.findOne({ where: { id: userId } })
@@ -65,8 +65,8 @@ export const UpdateMyProfile = async (req, res, next) => {
     if (firstName) {
         user.firstName = firstName
     }
-    if (lastname) {
-        user.lastname = lastname
+    if (lastName) {
+        user.lastName = lastName
     }
 
     const token = genrateToken({ payload: { id: user.id, email } })
