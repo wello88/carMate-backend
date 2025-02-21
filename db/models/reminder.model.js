@@ -9,7 +9,7 @@ Reminder.init(
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     userId: { type: DataTypes.INTEGER, allowNull: false ,references:{model:'users',key:'id'}},
     title: { type: DataTypes.STRING, allowNull: false },
-    note: { type: DataTypes.TEXT },
+    note: { type: DataTypes.TEXT , allowNull: true},
     cash: { type: DataTypes.DECIMAL, allowNull: true },
     startDate: { type: DataTypes.DATE, allowNull: true },
     endDate: { type: DataTypes.DATE, allowNull: true },

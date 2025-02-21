@@ -109,8 +109,8 @@ class ApiFeature {
                 count: result.count,
                 data: result.rows,
                 page: parseInt(this.queryData.page) || 1,
-                size: parseInt(this.queryData.size) || 2,
-                totalPages: Math.ceil(result.count / (parseInt(this.queryData.size) || 2))
+                size: parseInt(this.queryData.size) || 10,
+                totalPages: Math.ceil(result.count / (parseInt(this.queryData.size) || 10))
             };
         } catch (error) {
             throw new Error(`Query failed: ${error.message}`);

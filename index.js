@@ -3,9 +3,6 @@ import express from "express"
 import path from "path"
 import { fileURLToPath } from 'url'
 import cors from "cors";
-
-
-
 import { initApp } from "./src/initApp.js"
 import { syncDatabase } from "./db/index.js"
 

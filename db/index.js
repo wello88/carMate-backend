@@ -7,6 +7,8 @@ import Category from './models/category.model.js';
 import Worker from './models/worker.model.js';
 import Winch from './models/winch.model.js';
 import Car from './models/car.model.js';
+import Post from './models/mobilepost.model.js';
+import Notification from './models/notification.model.js';
 
 export const syncDatabase = async () => {
   try {
@@ -29,7 +31,9 @@ export {
   Category,
   Product,
   Winch,
-  Car
+  Car,
+  Post,
+  Notification
 };
 
 

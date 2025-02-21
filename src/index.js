@@ -6,6 +6,9 @@ import adminRouter from "./modules/admin/admin.router.js";
 import superAdminRouter from "./modules/superAdmin/superadmin.router.js"
 import communityRouter from "./modules/community/community.router.js";
 import winchRouter from "./modules/winch/winch.router.js";
+import postRouter from "./modules/mobile-post & request/post.router.js";
+import offerRouter from "./modules/offer/offer.router.js";
+import notificationRouter from "./modules/notification/notification.routes.js";
 
 
 export {
@@ -17,7 +20,10 @@ export {
     adminRouter,
     superAdminRouter,
     communityRouter,
-    winchRouter
+    winchRouter,
+    postRouter,
+    offerRouter,
+    notificationRouter
 }
 
 

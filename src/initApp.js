@@ -47,5 +47,8 @@ export const initApp =  (app,express) => {
     app.use('/superAdmin', allRouters.superAdminRouter)
     app.use('/community', allRouters.communityRouter)
     app.use('/winch', allRouters.winchRouter)
+    app.use('/post', allRouters.postRouter)
+    app.use('/offer', allRouters.offerRouter)
+    app.use('/notification', allRouters.notificationRouter)
     app.use(globalErrorHandler)
 }   
