@@ -139,50 +139,66 @@ export const login = async (req, res, next) => {
 export const forgetPassword = async (req, res, next) => {
     const { email } = req.body;
 
-    // Check if the user exists
     const userExist = await User.findOne({
-        where: {
-            email: email
-        }
+        where: { email }
     });
 
     if (!userExist) {
         return next(new AppError(messages.user.notfound, 404));
     }
 
-    // If OTP already sent and not expired
-    if (userExist.otp && userExist.otpExpiry > Date.now()) {
-        return next(new AppError(messages.user.otpAlreadySent, 400));
-    }
+    const currentTime = Date.now();
 
-    // Reset OTP attempt count
-    userExist.otpAttempts = 0;
+    // If OTP exists, check if it's expired and handle cooldown
+    if (userExist.otp) {
+        const otpExpiryTime = new Date(userExist.otpExpiry).getTime();
+        const otpCreationTime = otpExpiryTime - (15 * 60 * 1000);
+        const timeSinceLastOTP = currentTime - otpCreationTime;
+
+        // If OTP is not expired
+        if (otpExpiryTime > currentTime) {
+            return next(new AppError(messages.user.otpAlreadySent, 400));
+        } 
+        // If within cooldown period
+        else if (timeSinceLastOTP < 30 * 1000) {
+            const remainingTime = Math.ceil((30 * 1000 - timeSinceLastOTP) / 1000);
+            return next(new AppError(`Please wait ${remainingTime} seconds before requesting a new OTP`, 429));
+        }
+    }
 
     // Generate and set OTP
     const otp = generateOTP();
-    userExist.otp = otp;
-    userExist.otpExpiry = Date.now() + 15 * 60 * 1000;
-
-    // Save to database
-    await userExist.save();
 
     try {
+        // Update user with new OTP
+        await userExist.update({
+            otp: otp,
+            otpExpiry: new Date(currentTime + 15 * 60 * 1000),
+            otpAttempts: 0
+        });
+
         await sendEmailForgetPassword({
             to: email,
             subject: 'Forget Password',
             html: htmlTemplateOTP(otp),
         });
-    } catch (emailError) {
-        // If email fails, we should remove the OTP from database
-        userExist.otp = null;
-        userExist.otpExpiry = null;
-        await userExist.save();
+
+        return res.status(200).json({ 
+            message: 'Check your email', 
+            success: true 
+        });
+
+    } catch (error) {
+        // If email fails, cleanup OTP data
+        await userExist.update({
+            otp: null,
+            otpExpiry: null,
+            otpAttempts: 0
+        });
         return next(new AppError('Failed to send email', 500));
     }
-
-    // Send response
-    return res.status(200).json({ message: 'Check your email', success: true });
 };
+
 
 
 
@@ -278,19 +294,21 @@ export const verifyOtp = async (req, res, next) => {
 
     const otpString = otp.toString();
     const storedOtpString = user.otp ? user.otp.toString() : '';
-
     const currentTime = Date.now();
-    const otpExpiryTime = user.otpExpiry ? user.otpExpiry : 0;
-    const otpCooldownTime = user.lastOtpRequest ? user.lastOtpRequest : 0;
+    const otpExpiryTime = user.otpExpiry ? new Date(user.otpExpiry).getTime() : 0;
 
-    // Check if OTP is valid (within 5 min)
+    // Check if OTP is valid and not expired
     if (otpExpiryTime > currentTime) {
         if (storedOtpString !== otpString) {
             await user.increment('otpAttempts', { by: 1 });
             await user.reload();
 
             if (user.otpAttempts > 3) {
-                await user.update({ otp: null, otpExpiry: null, otpAttempts: null, lastOtpRequest: null });
+                await user.update({ 
+                    otp: null, 
+                    otpExpiry: null, 
+                    otpAttempts: 0 
+                });
                 return next(new AppError('Maximum OTP attempts exceeded. Please request a new OTP.', 403));
             }
 
@@ -298,34 +316,56 @@ export const verifyOtp = async (req, res, next) => {
         }
 
         // OTP is valid → Reset OTP attempts & store verified status
-        await user.update({ otpAttempts: 0, otp: null, otpExpiry: null, otpVerified: true });
+        await user.update({ 
+            otpAttempts: 0, 
+            otp: null, 
+            otpExpiry: null, 
+            otpVerified: true 
+        });
 
-        return res.status(200).json({ message: 'OTP verified successfully', success: true });
+        return res.status(200).json({ 
+            message: 'OTP verified successfully', 
+            success: true 
+        });
     }
 
-    // OTP expired → Check cooldown for new OTP
-    if (currentTime - otpCooldownTime < 30 * 1000) {
-        return next(new AppError(`You must wait ${Math.ceil((30 * 1000 - (currentTime - otpCooldownTime)) / 1000)} seconds before requesting a new OTP.`, 429));
+    // If OTP is expired, check cooldown and generate new OTP
+    const otpCreationTime = otpExpiryTime - (15 * 60 * 1000);
+    const timeSinceLastOTP = currentTime - otpCreationTime;
+
+    if (timeSinceLastOTP < 30 * 1000) {
+        const remainingTime = Math.ceil((30 * 1000 - timeSinceLastOTP) / 1000);
+        return next(new AppError(`Please wait ${remainingTime} seconds before requesting a new OTP`, 429));
     }
 
-    // Generate a new OTP
+    // Generate and send new OTP
     const newOtp = generateOTP();
-    await user.update({
-        otp: newOtp,
-        otpExpiry: currentTime + 5 * 60 * 1000, // Valid for 5 min
-        otpAttempts: 0,
-        lastOtpRequest: currentTime
-    });
+    try {
+        await user.update({
+            otp: newOtp,
+            otpExpiry: new Date(currentTime + 15 * 60 * 1000),
+            otpAttempts: 0
+        });
 
-    await sendEmail({
-        to: email,
-        subject: 'Resent OTP',
-        html: `<h1>Your new OTP is ${newOtp}</h1>`
-    });
+        await sendEmailForgetPassword({
+            to: email,
+            subject: 'New OTP',
+            html: htmlTemplateOTP(newOtp)
+        });
 
-    return res.status(200).json({ message: "Check your email for the new OTP", success: true });
+        return res.status(200).json({ 
+            message: "Previous OTP expired. A new OTP has been sent to your email", 
+            success: true 
+        });
+    } catch (error) {
+        await user.update({
+            otp: null,
+            otpExpiry: null,
+            otpAttempts: 0
+        });
+        return next(new AppError('Failed to send new OTP', 500));
+    }
 };
-
 // Reset Password (Requires OTP Verification)
 export const resetPassword = async (req, res, next) => {
     const { newPassword, email } = req.body;
