@@ -1,5 +1,5 @@
 import { sequelize } from "../../../db/connection.js"
-import { Reminder, User, Car, Community, Winch, Worker } from "../../../db/index.js"
+import { Reminder, User, Car, Community, Winch, Worker, PostReview } from "../../../db/index.js"
 import Review from "../../../db/models/review.model.js"
 import { AppError } from "../../utils/appError.js"
 import { uploadToCloudinary } from "../../utils/cloudinary.js"
@@ -381,3 +381,65 @@ export const LikePost = async (req, res, next) => {
 
     res.json({ message: "Like status updated", likes: updatedLikes });
 }
+
+
+
+
+
+
+
+// ✅ Create or Update a Review
+export const createOrUpdateReview = async (req, res, next) => {
+    try {
+        const userId = req.authUser.id;
+        const { reviewContent } = req.body;
+
+        // Validate input
+        if (!reviewContent) {
+            return next(new AppError(messages.review.contentRequired, 400));
+        }
+
+        // Find existing review by user
+        let review = await PostReview.findOne({ where: { userId } });
+        
+
+        if (review) {
+            // Update existing review
+            review.reviewContent = reviewContent;
+            await review.save();
+        } else {
+            // Create new review
+            review = await PostReview.create({ userId, reviewContent });
+        }
+
+        return res.status(201).json({
+            status: "success",
+            message: review ? "Review updated successfully" : "Review added successfully",
+            data: { review }
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+// ✅ Get All Reviews
+export const getAllReviews = async (req, res, next) => {
+    try {
+        const reviews = await PostReview.findAll({ include: [
+            {
+                model: User,
+                as: "author",
+                attributes: ["firstName", "lastName"], 
+            },
+        ],});
+
+        return res.status(200).json({
+            status: "success",
+            data: { reviews }
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};

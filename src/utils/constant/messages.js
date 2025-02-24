@@ -21,6 +21,7 @@ const genrateMessage = (entity)=>({
     contentRequired:'content is required',
     notFound:`${entity} not found`,
     logoutsuccessfully:'logout successfully',
+    contentRequired:'content is required',
 })
 export const messages = {
     user:genrateMessage('user'),
@@ -38,4 +39,6 @@ export const messages = {
     winch:genrateMessage('winch'),
     reminder:genrateMessage('reminder'),
     post:genrateMessage('post'),
+    comment:genrateMessage('comment'),
+
 }

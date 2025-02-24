@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { asyncHandler } from "../../utils/appError.js";
-import { AddCar, AddReminder, DeleteMyAccount, GetMyCars, GetMyProfile, GetReminders, UpdateMyProfile, UpdateReminder, DeleteReminder, LikePost, RateWinch } from "./user.controller.js";
+import { AddCar, AddReminder, DeleteMyAccount, GetMyCars, GetMyProfile, GetReminders, UpdateMyProfile, UpdateReminder, DeleteReminder, LikePost, RateWinch, createOrUpdateReview, getAllReviews } from "./user.controller.js";
 import { isAuthenticated } from "../../middleware/authentication.js";
 import { addCarSchema, updateProfileSchema, validateRequest } from "./user.validation.js";
 import { isAdmin } from "../../middleware/validation.js";
@@ -21,4 +21,7 @@ userRouter.put("/updatereminder/:reminderId", isAuthenticated(), asyncHandler(Up
 userRouter.delete("/deletereminder/:reminderId", isAuthenticated(), asyncHandler(DeleteReminder))
 userRouter.post("/LikePost/:postId", isAuthenticated(), asyncHandler(LikePost))
 userRouter.post('/rate-winch/:winchId', isAuthenticated(), isAdmin, asyncHandler(RateWinch))
+
+userRouter.post('/reviews', isAuthenticated(), asyncHandler(createOrUpdateReview))
+userRouter.get('/reviews', asyncHandler(getAllReviews))
 export default userRouter

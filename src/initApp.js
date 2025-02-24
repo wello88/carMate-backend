@@ -50,5 +50,6 @@ export const initApp =  (app,express) => {
     app.use('/post', allRouters.postRouter)
     app.use('/offer', allRouters.offerRouter)
     app.use('/notification', allRouters.notificationRouter)
+    app.use('/comment', allRouters.commentRouter)
     app.use(globalErrorHandler)
 }   

@@ -9,6 +9,7 @@ import winchRouter from "./modules/winch/winch.router.js";
 import postRouter from "./modules/mobile-post & request/post.router.js";
 import offerRouter from "./modules/offer/offer.router.js";
 import notificationRouter from "./modules/notification/notification.routes.js";
+import commentRouter from "./modules/comments/comment.routes.js";
 
 
 export {
@@ -23,7 +24,8 @@ export {
     winchRouter,
     postRouter,
     offerRouter,
-    notificationRouter
+    notificationRouter,
+    commentRouter
 }
 
 

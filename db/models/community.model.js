@@ -16,7 +16,7 @@ Community.init(
       allowNull: false,
     },
     images: { type: DataTypes.JSONB, allowNull: true },
-    comments: {
+    comment: {
       type: DataTypes.STRING,
       defaultValue: 0,
     },
