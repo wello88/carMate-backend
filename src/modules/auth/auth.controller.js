@@ -9,8 +9,9 @@ import { htmlTemplateOTP } from "../../utils/htmlTemplate.js";
 import { generateOTP } from "../../utils/otp.js";
 import { genrateToken } from "../../utils/token.js";
 export const signup = async (req, res, next) => {
-    const { email, password, firstName, lastName, phone, specialization, profilePhoto, role, location, rating } = req.body;
-
+    let { email, password, firstName, lastName, phone, specialization, profilePhoto, role, location, rating } = req.body;
+    // Convert email to lowercase
+    email = email.toLowerCase();
     const transaction = await sequelize.transaction();
 
     // Check if user already exists
@@ -88,7 +89,8 @@ export const signup = async (req, res, next) => {
 
 export const login = async (req, res, next) => {
 
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+    email = email.toLowerCase();
 
     const user = await User.findOne({
         where: {

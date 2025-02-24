@@ -9,11 +9,12 @@ import {
 import { asyncHandler } from '../../utils/appError.js';
 import { isAdmin } from '../../middleware/validation.js';
 import { isAuthenticated } from '../../middleware/authentication.js';
+import { cloudupload } from '../../utils/multer.cloud.js';
 
 const router = express.Router();
 
 // إنشاء عنصر جديد
-router.post('/winches',isAuthenticated(),isAdmin,asyncHandler(createWinch) );
+router.post('/winches',isAuthenticated(),isAdmin,cloudupload().single('profilePhoto'),asyncHandler(createWinch) );
 
 // الحصول على جميع العناصر
 router.get('/winches' ,asyncHandler(getAllWinches));

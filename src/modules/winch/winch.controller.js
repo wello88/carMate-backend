@@ -2,7 +2,17 @@ import Winch from '../../../db/models/winch.model.js';
 import { ApiFeature } from '../../../src/utils/apiFeature.js';
 export const createWinch = async (req, res) => {
 
-    const { firstName, lastName, email, profilePhoto, area, rating } = req.body;
+    let { firstName, lastName, email, profilePhoto, area, rating } = req.body;
+
+    profilePhoto = process.env.SECURE_URL;
+
+    if (req.file) {
+      // Upload image to Cloudinary
+      const uploadedImage = await uploadToCloudinary(req.file.buffer, "winch_profiles");
+      profilePhoto = uploadedImage.secure_url;
+  }
+
+
     const newWinch = await Winch.create({
       firstName,
       lastName,

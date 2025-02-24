@@ -4,7 +4,7 @@ import Joi from "joi";
 export const signupSchema = Joi.object({
     firstName: Joi.string().min(2).max(50).required(),
     lastName: Joi.string().min(2).max(50).required(),
-    email: Joi.string().email().required(),
+    email: Joi.string().email().lowercase().required(),
     password: Joi.string().min(6).max(100) 
     .pattern(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&#])[A-Za-z\\d@$!%*?&#]{6,100}$"))
     .required(),
