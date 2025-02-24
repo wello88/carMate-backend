@@ -8,7 +8,7 @@ import { cloudupload } from "../../utils/multer.cloud.js";
 
 const userRouter = Router()
 userRouter.get('/myprofile', isAuthenticated(), asyncHandler(GetMyProfile))
-userRouter.put('/updateprofile', isAuthenticated(), validateRequest(updateProfileSchema),
+userRouter.put('/updateprofile', validateRequest(updateProfileSchema), isAuthenticated(), 
     cloudupload().fields([{ name: 'profilePhoto', maxCount: 1 }]), asyncHandler(UpdateMyProfile))
 
 
