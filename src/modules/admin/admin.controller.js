@@ -62,6 +62,7 @@ export const adminLogin = async (req, res, next) => {
 
 }
 
+
 //logout
 export const adminLogout = async (req, res, next) => {
     const userId = req.authUser.id
@@ -172,7 +173,7 @@ export const addUser = async (req, res, next) => {
 export const updateUser = async (req, res, next) => {
 
     const userId = req.params.id
-    const { firstName, lastName, email, password, phone, role, status, specialization, location,isActive } = req.body
+    const { firstName, lastName, email, password, phone, role, status, specialization, location, isActive } = req.body
 
     const user = await User.findByPk(userId)
 
