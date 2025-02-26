@@ -107,57 +107,6 @@ export const AddCategory = async (req, res) => {
 
 
 //admin add user(customer, worker, seller) and if worker add specialization and location
-// export const addUser = async (req, res, next) => {
-//     const { firstName, lastName, email, password, phone, role, status, specialization, location } = req.body
-
-//     const createdBy = req.authUser.id
-//     if (role === 'worker') {
-//         if (!specialization || !location) {
-//             return next(new AppError(messages.user.invalidCreadintials, 401));
-//         }
-//     }
-//     if (role === 'admin' || role === 'superadmin') {
-//         return next(new AppError('you are not allowed to add admin', 401));
-//     }
-
-//     const checkEmailExistance = await User.findOne({ where: { email } });
-//     if (checkEmailExistance) {
-//         return next(new AppError(messages.user.alreadyExist, 409));
-//     }
-
-//     const hashedPassword = hashPassword({ password });
-
-//     const user = await User.create({
-//         firstName,
-//         lastName,
-//         email,
-//         password: hashedPassword,
-//         phone,
-//         status,
-//         role,
-//         specialization,
-//         location,
-//         createdBy: createdBy
-//     });
-
-//     if (!user) {
-//         return next(new AppError(messages.user.notcreated, 400));
-//     }
-
-//     res.status(201).json({
-//         status: messages.user.createSuccessfully,
-//         data: {
-//             user
-//         }
-//     })
-
-
-// }
-
-
-
-
-
 
 export const addUser = async (req, res, next) => {
     const { firstName, lastName, email, password, phone, role, status, specialization, location } = req.body;
@@ -203,6 +152,12 @@ export const addUser = async (req, res, next) => {
                 { transaction }
             );
         }
+        user.password = undefined;
+        user.otpVerified = undefined;
+        user.otp = undefined;
+        user.otpExpiry = undefined;
+        user.otpAttempts = undefined;
+        user.isActive = true;
 
         res.status(201).json({
             status: messages.user.createSuccessfully,
@@ -217,7 +172,7 @@ export const addUser = async (req, res, next) => {
 export const updateUser = async (req, res, next) => {
 
     const userId = req.params.id
-    const { firstName, lastName, email, password, phone, role, status, specialization, location } = req.body
+    const { firstName, lastName, email, password, phone, role, status, specialization, location,isActive } = req.body
 
     const user = await User.findByPk(userId)
 
@@ -258,6 +213,9 @@ export const updateUser = async (req, res, next) => {
     if (status) {
         user.status = status
     }
+    if (isActive) {
+        user.isActive = isActive
+    }
     await user.save()
     if (specialization) {
 
@@ -270,10 +228,15 @@ export const updateUser = async (req, res, next) => {
         await worker.save()
 
     }
+    user.password = undefined;
+    user.otpVerified = undefined;
+    user.otp = undefined;
+    user.otpExpiry = undefined;
+    user.otpAttempts = undefined;
     res.status(200).json({
         status: messages.user.updateSuccessfully,
         data: {
-            user ,
+            user,
             worker
         }
     })
@@ -300,17 +263,23 @@ export const deleteUser = async (req, res, next) => {
 
 
 //get specific user with id in params
-export const getSpecificUser = async(req,res,next)=>{
+export const getSpecificUser = async (req, res, next) => {
 
-    const userId=req.params.id
+    const userId = req.params.id
     const user = await User.findByPk(userId)
-    const worker = await Worker.findOne({where:{id:userId}})
+    const worker = await Worker.findOne({ where: { id: userId } })
     if (!user) {
         return next(new AppError(messages.user.notfound, 404));
     }
+    user.password = undefined;
+    user.otpVerified = undefined;
+    user.otp = undefined;
+    user.otpExpiry = undefined;
+    user.otpAttempts = undefined;
+
     res.status(200).json({
-        status:messages.user.getsuccessfully,
-        data:{user,worker}
+        status: messages.user.getsuccessfully,
+        data: { user, worker }
     })
 
 
