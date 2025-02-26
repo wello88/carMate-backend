@@ -33,7 +33,7 @@ PostReview.init(
   }
 );
 
-PostReview.belongsTo(User, { foreignKey: 'userId', as: 'author' });
-User.hasOne(PostReview, { foreignKey: 'userId', as: 'review' });
+PostReview.belongsTo(User, { foreignKey: 'userId', as: 'author' , onDelete: 'CASCADE' });
+User.hasOne(PostReview, { foreignKey: 'userId', as: 'review' , onDelete: 'CASCADE' });
 
 export default PostReview;

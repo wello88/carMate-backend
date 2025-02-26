@@ -1,11 +1,12 @@
 import { Op } from "sequelize"
-import { Category, Product, User } from "../../../db/index.js"
+import { Category, Product, User, Worker } from "../../../db/index.js"
 import { ApiFeature } from "../../utils/apiFeature.js"
 import { AppError } from "../../utils/appError.js"
 import { uploadToCloudinary } from "../../utils/cloudinary.js"
 import { messages } from "../../utils/constant/messages.js"
 import { comparePassword, hashPassword } from "../../utils/hashAndcompare.js"
 import { genrateToken } from "../../utils/token.js"
+import { sequelize } from "../../../db/connection.js"
 
 
 
@@ -106,17 +107,68 @@ export const AddCategory = async (req, res) => {
 
 
 //admin add user(customer, worker, seller) and if worker add specialization and location
-export const addUser = async (req, res, next) => {
-    const { firstName, lastName, email, password, phone, role, status, specialization, location } = req.body
+// export const addUser = async (req, res, next) => {
+//     const { firstName, lastName, email, password, phone, role, status, specialization, location } = req.body
 
-    const createdBy = req.authUser.id
-    if (role === 'worker') {
-        if (!specialization || !location) {
-            return next(new AppError(messages.user.invalidCreadintials, 401));
-        }
-    }
+//     const createdBy = req.authUser.id
+//     if (role === 'worker') {
+//         if (!specialization || !location) {
+//             return next(new AppError(messages.user.invalidCreadintials, 401));
+//         }
+//     }
+//     if (role === 'admin' || role === 'superadmin') {
+//         return next(new AppError('you are not allowed to add admin', 401));
+//     }
+
+//     const checkEmailExistance = await User.findOne({ where: { email } });
+//     if (checkEmailExistance) {
+//         return next(new AppError(messages.user.alreadyExist, 409));
+//     }
+
+//     const hashedPassword = hashPassword({ password });
+
+//     const user = await User.create({
+//         firstName,
+//         lastName,
+//         email,
+//         password: hashedPassword,
+//         phone,
+//         status,
+//         role,
+//         specialization,
+//         location,
+//         createdBy: createdBy
+//     });
+
+//     if (!user) {
+//         return next(new AppError(messages.user.notcreated, 400));
+//     }
+
+//     res.status(201).json({
+//         status: messages.user.createSuccessfully,
+//         data: {
+//             user
+//         }
+//     })
+
+
+// }
+
+
+
+
+
+
+export const addUser = async (req, res, next) => {
+    const { firstName, lastName, email, password, phone, role, status, specialization, location } = req.body;
+    const createdBy = req.authUser.id;
+
     if (role === 'admin' || role === 'superadmin') {
-        return next(new AppError('you are not allowed to add admin', 401));
+        return next(new AppError('You are not allowed to add admin', 401));
+    }
+
+    if (role === 'worker' && (!specialization || !location)) {
+        return next(new AppError(messages.user.invalidCreadintials, 401));
     }
 
     const checkEmailExistance = await User.findOne({ where: { email } });
@@ -126,32 +178,39 @@ export const addUser = async (req, res, next) => {
 
     const hashedPassword = hashPassword({ password });
 
-    const user = await User.create({
-        firstName,
-        lastName,
-        email,
-        password: hashedPassword,
-        phone,
-        status,
-        role,
-        specialization,
-        location,
-        createdBy: createdBy
-    });
+    await sequelize.transaction(async (transaction) => {
+        const user = await User.create(
+            {
+                firstName,
+                lastName,
+                email,
+                password: hashedPassword,
+                phone,
+                status,
+                role,
+                createdBy
+            },
+            { transaction }
+        );
 
-    if (!user) {
-        return next(new AppError(messages.user.notcreated, 400));
-    }
-
-    res.status(201).json({
-        status: messages.user.createSuccessfully,
-        data: {
-            user
+        if (role === 'worker') {
+            await Worker.create(
+                {
+                    id: user.id, // Use the user's ID as foreign key
+                    specialization,
+                    location
+                },
+                { transaction }
+            );
         }
-    })
 
+        res.status(201).json({
+            status: messages.user.createSuccessfully,
+            data: { user }
+        });
+    });
+};
 
-}
 
 
 //admin update user
@@ -161,6 +220,9 @@ export const updateUser = async (req, res, next) => {
     const { firstName, lastName, email, password, phone, role, status, specialization, location } = req.body
 
     const user = await User.findByPk(userId)
+
+    const worker = await Worker.findOne({ where: { id: userId } })
+
     if (!user) {
         return next(new AppError(messages.user.notfound, 404));
     }
@@ -170,6 +232,7 @@ export const updateUser = async (req, res, next) => {
 
 
     const hashedPassword = hashPassword({ password });
+
     if (firstName) {
         user.firstName = firstName
     }
@@ -195,19 +258,23 @@ export const updateUser = async (req, res, next) => {
     if (status) {
         user.status = status
     }
+    await user.save()
     if (specialization) {
-        user.specialization = specialization
+
+        worker.specialization = specialization
+        await worker.save()
+
     }
     if (location) {
-        user.location = location
+        worker.location = location
+        await worker.save()
+
     }
-
-    await user.save()
-
     res.status(200).json({
         status: messages.user.updateSuccessfully,
         data: {
-            user
+            user ,
+            worker
         }
     })
 }
@@ -233,18 +300,19 @@ export const deleteUser = async (req, res, next) => {
 
 
 //get specific user with id in params
-
 export const getSpecificUser = async(req,res,next)=>{
 
     const userId=req.params.id
     const user = await User.findByPk(userId)
+    const worker = await Worker.findOne({where:{id:userId}})
     if (!user) {
         return next(new AppError(messages.user.notfound, 404));
     }
     res.status(200).json({
         status:messages.user.getsuccessfully,
-        data:user
+        data:{user,worker}
     })
+
 
 }
 

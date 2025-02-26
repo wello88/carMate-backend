@@ -52,7 +52,7 @@ export const GetMyProfile = async (req, res, next) => {
 export const UpdateMyProfile = async (req, res, next) => {
 
     const userId = req.authUser.id
-    const { firstName, lastName, email, phone, profilePhoto, specialization, location } = req.body
+    const { firstName, lastName, email, phone, specialization, location } = req.body
     const user = await User.findByPk(userId)
     const emailExistance = email ? await User.findOne({ where: { email } }) : null;
     const worker = await Worker.findOne({ where: { id: userId } })
@@ -118,25 +118,30 @@ export const UpdateMyProfile = async (req, res, next) => {
 
 }
 
-
-
-
-//delte my account
 export const DeleteMyAccount = async (req, res, next) => {
     const transaction = await sequelize.transaction();
 
-    const userId = req.authUser.id
-    await Reminder.destroy({ where: { userId } }, transaction)
-    await Car.destroy({ where: { userId } }, transaction)
-
-    const user = await User.findByPk(userId)
-    if (!user) {
-        await transaction.rollback();
-        return next(new AppError(messages.user.notfound, 404))
+    const userId = req.authUser.id;
+    if (!userId) {
+        return next(new AppError(messages.user.notfound, 404));
     }
 
+    // Delete reminders (if exist)
+    await Reminder.destroy({ where: { userId: userId } }, { transaction });
 
-    await user.destroy({ transaction })
+    // Delete cars (if exist)
+    await Car.destroy({ where: { userID: userId } }, { transaction });
+
+    await PostReview.destroy({ where: { userId: userId } }, { transaction });
+
+    // Find and delete user
+    const user = await User.findByPk(userId);
+    if (!user) {
+        await transaction.rollback();
+        return next(new AppError(messages.user.notfound, 404));
+    }
+
+    await user.destroy({ transaction });
 
     // Commit transaction
     await transaction.commit();
@@ -144,9 +149,8 @@ export const DeleteMyAccount = async (req, res, next) => {
     return res.status(200).json({
         success: true,
         message: messages.user.deleteSuccessfully
-    })
-
-}
+    });
+};
 
 
 
