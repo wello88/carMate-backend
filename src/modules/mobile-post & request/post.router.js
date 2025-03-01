@@ -19,7 +19,7 @@ postRouter.post("/createPost",
 // get all posts
 postRouter.get("/getAllPosts",
     isAuthenticated(),
-    asyncHandler(getAllPosts));
+    getAllPosts);
 
     
 // get specific post
