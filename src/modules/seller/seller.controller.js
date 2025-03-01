@@ -263,8 +263,26 @@ export const GetProducts = async (req, res, next) => {
         return next(new AppError(messages.product.notfound, 404));
     }
 
+    const userids = [...new Set(result.data.map(product => product.createdBy))];
+    const users = await User.findAll({
+        where: { id: userids },
+        attributes: ['id', 'firstName', 'lastName', 'email', 'profilePhoto', 'phone']
+    });
+
+    const userMap = {};
+    users.forEach(user => {
+        userMap[user.id] = user.get({ plain: true });
+    
+    })
+
+    result.data.forEach(product => {
+        product.createdBy = userMap[product.createdBy] || null;
+    }
+    )
+
     return res.status(200).json({
         status: "success",
         ...result
+        
     })
 }
