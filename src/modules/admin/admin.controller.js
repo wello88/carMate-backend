@@ -7,7 +7,7 @@ import { messages } from "../../utils/constant/messages.js"
 import { comparePassword, hashPassword } from "../../utils/hashAndcompare.js"
 import { genrateToken } from "../../utils/token.js"
 import { sequelize } from "../../../db/connection.js"
-
+import slugify from 'slugify';
 
 
 
@@ -87,8 +87,10 @@ export const adminLogout = async (req, res, next) => {
 //admin add category
 export const AddCategory = async (req, res) => {
 
-    const { name, slug } = req.body
+    const { name } = req.body
     const createdBy = req.authUser.id
+    const slug = slugify(name, { lower: true });
+
     const category = await Category.create({
         name,
         slug,
