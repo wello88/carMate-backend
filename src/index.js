@@ -10,6 +10,7 @@ import postRouter from "./modules/mobile-post & request/post.router.js";
 import offerRouter from "./modules/offer/offer.router.js";
 import notificationRouter from "./modules/notification/notification.routes.js";
 import commentRouter from "./modules/comments/comment.routes.js";
+import sessionRouter from "./modules/session/session.routes.js";
 
 
 export {
@@ -25,7 +26,8 @@ export {
     postRouter,
     offerRouter,
     notificationRouter,
-    commentRouter
+    commentRouter,
+    sessionRouter
 }
 
 

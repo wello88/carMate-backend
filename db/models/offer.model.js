@@ -19,7 +19,7 @@ Offer.init(
 
 User.hasMany(Offer, { foreignKey: 'workerId', onDelete: 'CASCADE' });
 Post.hasMany(Offer, { foreignKey: 'postId', onDelete: 'CASCADE' });
-Offer.belongsTo(Worker, { foreignKey: 'workerId', onDelete: 'CASCADE' });
+Offer.belongsTo(Worker, { foreignKey: 'workerId',as: 'worker' ,onDelete: 'CASCADE' });
 Worker.hasMany(Offer, { foreignKey: 'workerId' });
 
 export default Offer;

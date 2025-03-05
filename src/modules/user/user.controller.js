@@ -166,7 +166,7 @@ export const AddCar = async (req, res, next) => {
         nationality,
         plateNumber,
         trafficDepartment,
-        UserID: userId
+        userId: userId
     })
     if (!car) {
         return next(new AppError(messages.car.failtocreate, 400))
@@ -189,7 +189,7 @@ export const GetMyCars = async (req, res, next) => {
         return next(new AppError(messages.user.notfound, 404))
     }
 
-    const cars = await Car.findAll({ where: { UserID: userId } })
+    const cars = await Car.findAll({ where: { userId: userId } })
     if (!cars) {
         return next(new AppError(messages.car.notfound, 404))
     }

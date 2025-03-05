@@ -9,7 +9,7 @@ Car.init(
 {
 
     id:{type:DataTypes.INTEGER,primaryKey:true,autoIncrement:true},
-    userID:{type:DataTypes.INTEGER,allowNull:false,references:{model:'users',key:'id'}},
+    userId:{type:DataTypes.INTEGER,allowNull:false,references:{model:'users',key:'id'}},
     carName:{type:DataTypes.STRING,allowNull:false},
     nationality:{type:DataTypes.STRING,allowNull:false},
     carModel:{type:DataTypes.STRING,allowNull:false},
@@ -23,7 +23,7 @@ Car.init(
 }
 
 )
-User.hasMany(Car,{foreignKey:'userID',onDelete:'CASCADE'})
-Car.belongsTo(User,{foreignKey:'userID',onDelete:'CASCADE'})
+User.hasMany(Car,{foreignKey:'userId',onDelete:'CASCADE'})
+Car.belongsTo(User,{foreignKey:'userId',onDelete:'CASCADE'})
 
 export default Car;

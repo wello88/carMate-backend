@@ -11,6 +11,8 @@ import Post from './models/mobilepost.model.js';
 import Notification from './models/notification.model.js';
 import Comment from './models/comment.model.js';
 import PostReview from './models/post.review.model.js';
+import Session from './models/session.model.js';
+import Offer from './models/offer.model.js';
 
 export const syncDatabase = async () => {
   try {
@@ -38,6 +40,8 @@ export {
   Notification,
   Comment,
   PostReview,
+  Session,
+  Offer,
 };
 
 

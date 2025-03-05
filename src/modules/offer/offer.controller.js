@@ -38,6 +38,7 @@ export const getAllOffers = async (req, res, next) => {
       const offers = await Offer.findAll({ where: { postId },include: [
         {
           model: Worker,
+          as: 'worker',
           include: [
             {
               model: User, // Get User details through Worker model

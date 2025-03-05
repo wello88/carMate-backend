@@ -12,4 +12,4 @@ authRouter.post('/login',validateRequest(validateLogin),asyncHandler(login))
 authRouter.post('/verify',asyncHandler(verifyOtp))
 authRouter.post('/forget-password',asyncHandler(forgetPassword))
 authRouter.put('/change-password',asyncHandler(resetPassword))
-export default authRouter
+export default authRouter 
