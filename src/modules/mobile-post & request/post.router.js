@@ -26,6 +26,8 @@ postRouter.get("/getAllPosts",
 postRouter.get("/getPost/:id",
     isAuthenticated(),
     asyncHandler(getPost));
+
+    
 // get own posts
 postRouter.get("/getOwnPosts",
     isAuthenticated(),
@@ -40,13 +42,6 @@ postRouter.delete("/deletePost/:id",
     isAuthenticated(),
     asyncHandler(deletePost));
 
-// get all posts by user
-// communityRouter.get("/getPostsByUser/:id",
-//     isAuthenticated(),
-//     asyncHandler(getPostsByUser));
-
-
-// export router
 
 
 export default postRouter;
