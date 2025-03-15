@@ -365,28 +365,53 @@ export const RateWinch = async (req, res) => {
 
 // user can make like&dislike
 export const LikePost = async (req, res, next) => {
-    const userId = req.authUser.id; // Get user ID from authenticated request
-    const { postId } = req.params;
+    try {
+        const userId = req.authUser.id;
+        const { postId } = req.params;
 
-    const post = await Community.findByPk(postId);
-    if (!post) return res.status(404).json({ message: "Post not found" });
+        // Find post with error handling
+        const post = await Community.findByPk(postId);
+        if (!post) {
+            return next(new AppError(messages.post.notFound, 404));
+        }
 
-    let updatedLikes = post.likes || [];
+        // Ensure likes is an array
+        let updatedLikes = Array.isArray(post.likes) ? [...post.likes] : [];
+        
+        // Toggle like status
+        const isLiked = updatedLikes.includes(userId);
+        if (isLiked) {
+            updatedLikes = updatedLikes.filter(id => id !== userId);
+        } else {
+            updatedLikes.push(userId);
+        }
 
-    if (updatedLikes.includes(userId)) {
-        // Unlike: Remove userId from likes array
-        updatedLikes = updatedLikes.filter((id) => id !== userId);
-    } else {
-        // Like: Add userId to likes array
-        updatedLikes.push(userId);
+        // Update post with new likes array
+        const updatedPost = await post.update({
+            likes: updatedLikes
+        }, {
+            returning: true,
+            plain: true
+        });
+
+        // Verify the update was successful
+        if (!updatedPost) {
+            return next(new AppError('Failed to update likes', 500));
+        }
+
+        return res.status(200).json({
+            status: 'success',
+            message: isLiked ? 'Post unliked successfully' : 'Post liked successfully',
+            data: {
+                isLiked: !isLiked,
+                likesCount: updatedLikes.length,
+                likes: updatedLikes
+            }
+        });
+    } catch (error) {
+        next(error);
     }
-
-    await post.update({ likes: updatedLikes });
-
-    res.json({ message: "Like status updated", likes: updatedLikes });
-}
-
-
+};
 
 
 

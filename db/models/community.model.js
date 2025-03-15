@@ -20,9 +20,18 @@ Community.init(
       type: DataTypes.STRING,
       defaultValue: 0,
     },
+   
     likes: {
       type: DataTypes.JSONB,
       allowNull: true,
+      defaultValue: [], // Add default empty array
+      get() {
+        const rawValue = this.getDataValue('likes');
+        return Array.isArray(rawValue) ? rawValue : [];
+      },
+      set(value) {
+        this.setDataValue('likes', Array.isArray(value) ? value : []);
+      }
     },
     userId: {
       type: DataTypes.INTEGER,

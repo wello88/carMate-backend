@@ -19,7 +19,7 @@ userRouter.post("/addreminder", isAuthenticated(), asyncHandler(AddReminder))
 userRouter.get("/getreminder", isAuthenticated(), asyncHandler(GetReminders))
 userRouter.put("/updatereminder/:reminderId", isAuthenticated(), asyncHandler(UpdateReminder))
 userRouter.delete("/deletereminder/:reminderId", isAuthenticated(), asyncHandler(DeleteReminder))
-userRouter.post("/LikePost/:postId", isAuthenticated(), asyncHandler(LikePost))
+userRouter.patch("/LikePost/:postId", isAuthenticated(), asyncHandler(LikePost))
 userRouter.post('/rate-winch/:winchId', isAuthenticated(), isAdmin, asyncHandler(RateWinch))
 
 userRouter.post('/reviews', isAuthenticated(), asyncHandler(createOrUpdateReview))

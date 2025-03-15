@@ -11,7 +11,7 @@ SellerRouter.post(
     isAuthenticated(),
     cloudupload().fields([
         { name: 'mainImage', maxCount: 1 },
-        { name: 'subImages', maxCount: 5 }]),
+        { name: 'subImages', maxCount: 2 }]),
     asyncHandler(AddProduct)
 )
 

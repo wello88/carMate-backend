@@ -1,6 +1,7 @@
 import { messages } from "../../utils/constant/messages.js";
 import { AppError } from "../../utils/appError.js";
-import { Community, Comment } from "../../../db/index.js"; // Ensure Comment model exists
+import { Community, Comment, User } from "../../../db/index.js"; // Ensure Comment model exists
+import { where } from "sequelize";
 
 // ✅ Create a Comment
 export const createComment = async (req, res, next) => {
@@ -50,10 +51,29 @@ export const getCommentsByPost = async (req, res, next) => {
         }
 
         const comments = await Comment.findAll({ where: { postId } });
+    //map on each comment to return user details
+        const commentsWithUser = await Promise.all(comments.map(
+            async (comment) => {
+            const user = await User.findByPk(comment.userId);
+            return {
+                id: comment.id,
+                commentContent: comment.commentContent,
+                createdAt: comment.createdAt,
+                updatedAt: comment.updatedAt,
+                user: {
+                    id: user.id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    email: user.email,
+                    profilePhoto: user.profilePhoto
+                }
+            };
+        }));
+
 
         return res.status(200).json({
             status: "success",
-            data: { comments }
+            data: { comments: commentsWithUser }
         });
 
     } catch (error) {
