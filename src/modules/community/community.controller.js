@@ -120,6 +120,8 @@ export const getPost = async (req, res, next) => {
         data: { post: transformedPost }
     });
 } 
+
+
 // get own posts
 export const getOwnPosts = async (req, res, next) => {
     const userId = req.authUser.id;
@@ -147,6 +149,8 @@ export const getOwnPosts = async (req, res, next) => {
         data: { Posts } 
     })
 }
+
+
 // update post
 export const updatePost = async (req, res, next) => {
     const {id}=req.params;
@@ -183,6 +187,8 @@ export const updatePost = async (req, res, next) => {
         data: { post: post }
     })
 }
+
+
 // delete post
 export const deletePost = async (req, res, next) => {
     const {id}=req.params;
