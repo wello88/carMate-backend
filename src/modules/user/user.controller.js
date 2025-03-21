@@ -459,7 +459,7 @@ export const getAllReviews = async (req, res, next) => {
             {
                 model: User,
                 as: "author",
-                attributes: ["firstName", "lastName"], 
+                attributes: ["firstName", "lastName", "email", "phone", "profilePhoto"], 
             },
         ],});
 
