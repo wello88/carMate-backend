@@ -25,6 +25,7 @@ export const syncDatabase = async () => {
   }
 };
 
+Offer.hasOne(Session, { foreignKey: 'offerId', as: 'session' });
 
 
 export {

@@ -1,4 +1,5 @@
 import { Notification, Post, User, Worker } from "../../../db/index.js";
+import { Session } from "../../../db/index.js";
 import Offer from "../../../db/models/offer.model.js";
 import { AppError } from "../../utils/appError.js";
 
@@ -31,28 +32,34 @@ export const createOffer = async (req, res, next) => {
 
 
 
+
 export const getAllOffers = async (req, res, next) => {
-    
-      const { postId } = req.params;
-      
-      const offers = await Offer.findAll({ where: { postId },include: [
-        {
-          model: Worker,
-          as: 'worker',
-          include: [
-            {
-              model: User, // Get User details through Worker model
-              attributes: ['id', 'firstName', 'lastName', 'email', 'phone', 'profilePhoto'], // Choose user attributes
-            },
-          ],
-        },
-      ],
-     });
-      
-  
-      res.status(200).json({
-        status: 'success',
-        data: { offers},
-      });
-   
-  };
+  const { postId } = req.params;
+
+  const offers = await Offer.findAll({
+    where: { postId },
+    include: [
+      {
+        model: Worker,
+        as: 'worker',
+        include: [
+          {
+            model: User,
+            attributes: ['id', 'firstName', 'lastName', 'email', 'phone', 'profilePhoto'],
+          },
+        ],
+      },
+      {
+        model: Session,
+        as: 'session',
+        required: false, // allow null (if no session is associated)
+        attributes: ['startDate', 'endDate'],
+      },
+    ],
+  });
+
+  res.status(200).json({
+    status: 'success',
+    data: { offers },
+  });
+};

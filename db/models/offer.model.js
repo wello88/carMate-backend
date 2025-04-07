@@ -3,6 +3,7 @@ import { sequelize } from '../connection.js';
 import User from './user.model.js';
 import Post from './mobilepost.model.js';
 import Worker from './worker.model.js';
+import Session from './session.model.js'; 
 
 class Offer extends Model {}
 
