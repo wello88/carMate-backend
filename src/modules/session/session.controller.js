@@ -131,7 +131,7 @@ export const getMyOwnSessions = async (req, res, next) => {
         {
           model: User,
           as: "user", // ✅ Match alias in model
-          attributes: ["id", "firstName", "lastName", "email"],
+          attributes: ["id", "firstName", "lastName", "email","profilePhoto"],
         },
       ],
     });
