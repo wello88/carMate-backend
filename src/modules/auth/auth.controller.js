@@ -55,6 +55,11 @@ export const signup = async (req, res, next) => {
     }
     //remove password from response
     newUser.password = undefined
+    newUser.otp = undefined
+    newUser.otpExpiry = undefined
+    newUser.otpAttempts = undefined
+    newUser.otpVerified = undefined
+
 
     // if the role is seller add to user with role seller 
     if (newUser.role === 'seller') {
@@ -99,7 +104,7 @@ export const login = async (req, res, next) => {
     });
 
     if (!user) {
-        return next(new AppError(messages.user.notfound, 404));
+        return next(new AppError(messages.user.invalidCreadintials, 401));
     }
 
 
@@ -107,9 +112,6 @@ export const login = async (req, res, next) => {
     const isValid = comparePassword({ password, hashPassword: user.password });
 
     if (!isValid) {
-        console.log(user.password);
-        console.log(password);
-
         return next(new AppError(messages.user.invalidCreadintials, 401));
     }
     // Verify user status
@@ -223,6 +225,9 @@ export const forgetPassword = async (req, res, next) => {
     if (!userExist) {
         return next(new AppError(messages.user.notfound, 404));
     }
+    if(userExist.status !== 'verified'){
+        return next(new AppError(messages.user.notverified, 401));
+    }
 
     const currentTime = Date.now();
 
@@ -299,7 +304,7 @@ export const verifyOtp = async (req, res, next) => {
                     otpExpiry: null, 
                     otpAttempts: 0 
                 });
-                return next(new AppError('Maximum OTP attempts exceeded. Please request a new OTP after 30 seconds.', 403));
+                return next(new AppError('Maximum OTP attempts exceeded. Please request a new OTP.', 403));
             }
 
             return next(new AppError(`Invalid OTP. You have ${3 - user.otpAttempts} attempts left`, 401));
