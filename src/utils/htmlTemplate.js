@@ -490,7 +490,7 @@ export const verificationSuccessTemplate = () => {
       <div class="card-body">
         <div class="check-icon"></div>
         <p>Thank you for verifying your email address. Your account is now active and you can start using our services.</p>
-        <a href="https://fb-m90x.onrender.com/login" class="button">Continue to Login</a>
+        <a href="https://car-mate-frontend-lvv2syt0x-omers-projects-70d4da40.vercel.app/login" class="button">Continue to Login</a>
       </div>
     </div>
     <div class="card-footer">
