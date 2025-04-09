@@ -5,6 +5,7 @@ import { globalErrorHandler } from "./utils/appError.js"
 import * as allRouters from './index.js'
 import { User } from "../db/index.js"
 import { verifyToken } from "./utils/token.js"
+import { verificationSuccessTemplate } from "./utils/htmlTemplate.js"
 
 dotenv.config({ path: path.resolve('./config/.env') })
 
