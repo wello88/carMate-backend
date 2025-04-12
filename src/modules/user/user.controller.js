@@ -130,7 +130,7 @@ export const DeleteMyAccount = async (req, res, next) => {
     await Reminder.destroy({ where: { userId: userId } }, { transaction });
 
     // Delete cars (if exist)
-    await Car.destroy({ where: { userID: userId } }, { transaction });
+    await Car.destroy({ where: { userId: userId } }, { transaction });
 
     await PostReview.destroy({ where: { userId: userId } }, { transaction });
 
