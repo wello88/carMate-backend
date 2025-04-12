@@ -19,6 +19,13 @@ export const GetMyProfile = async (req, res, next) => {
     if (!user) {
         return next(new AppError(messages.user.notfound, 404))
     }
+
+     // Initialize response object
+     let responseData = {
+        success: true,
+        message: messages.user.getsuccessfully,
+        data: { user }
+    };
     //check if user is worker
     if (user.role === 'worker') {
 
@@ -26,21 +33,16 @@ export const GetMyProfile = async (req, res, next) => {
         if (!worker) {
             return next(new AppError(messages.worker.notfound, 404))
         }
-        return res.status(200).json({
-            success: true,
-            message: messages.user.getsuccessfully,
-            data: { user, worker }
-        })
+        // Add worker data to response
+        responseData.data.worker = worker;
 
     }
     //remove password from response
-    user.password = undefined
-    return res.status(200).json({
-        success: true,
-        message: messages.user.getsuccessfully,
-        data: user
+// Remove password from user response
+responseData.data.user.password = undefined;
+  // Return response
+  return res.status(200).json(responseData);
 
-    })
 
 
 }
