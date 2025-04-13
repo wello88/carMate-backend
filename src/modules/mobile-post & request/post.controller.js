@@ -1,7 +1,7 @@
 import { Post, User } from "../../../db/index.js";
 import { ApiFeature } from "../../utils/apiFeature.js";
 import { AppError } from "../../utils/appError.js";
-import { uploadToCloudinary } from "../../utils/cloudinary.js";
+import { deleteFromCloudinary, uploadToCloudinary } from "../../utils/cloudinary.js";
 import { messages } from "../../utils/constant/messages.js";
 
 // create post
