@@ -9,12 +9,14 @@ Product.init(
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     title: { type: DataTypes.STRING, allowNull: false },
+    arabicTitle: { type: DataTypes.STRING, allowNull: true },
     slug: { type: DataTypes.STRING, allowNull: false, unique: true },
     productLink: { type: DataTypes.STRING, allowNull: true },
     price: { type: DataTypes.DECIMAL, allowNull: false },
     subImages: { type: DataTypes.JSONB, allowNull: true }, // يمكن تخزين الصور كـ JSON array
     mainImage: { type: DataTypes.STRING, allowNull: true }, // صورة رئيسية
     description: { type: DataTypes.TEXT, allowNull: true },
+    arabicDescription: { type: DataTypes.TEXT, allowNull: true },
     createdBy: { type: DataTypes.INTEGER, allowNull: false }, // معرف المستخدم الذي أنشأ المنتج
     categoryId: { type: DataTypes.INTEGER, allowNull: false }, // معرف الفئة (Category)
   },  

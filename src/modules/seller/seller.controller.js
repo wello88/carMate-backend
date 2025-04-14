@@ -8,7 +8,7 @@ import { ApiFeature } from "../../utils/apiFeature.js";
 
 //seller add product
 export const AddProduct = async (req, res, next) => {
-    const { title, slug, productLink, price, description, categoryId } = req.body;
+    const { title,arbicTitle ,slug, productLink, price, description,arabicDescription ,categoryId } = req.body;
     const createdBy = req.authUser.id;
 
     if (req.authUser.role !== "seller") {
@@ -27,12 +27,14 @@ export const AddProduct = async (req, res, next) => {
     // Attempt to create the product first before uploading images
     const product = await Product.create({
         title,
+        arabicTitle,
         slug,
         productLink,
         price,
         mainImage: "", // Placeholder, will update later
         subImages: [],
         description,
+        arabicDescription,
         createdBy,
         categoryId
     });
