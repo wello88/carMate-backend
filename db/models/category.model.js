@@ -7,6 +7,7 @@ Category.init(
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     name: { type: DataTypes.STRING, allowNull: false, unique: true },
+    arabicName: { type: DataTypes.STRING, allowNull: true, unique: true },
     slug: { type: DataTypes.STRING, allowNull: false, unique: true },
     createdBy: { type: DataTypes.INTEGER, allowNull: false }, 
   },

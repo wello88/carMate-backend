@@ -2,7 +2,7 @@ import { Op } from "sequelize"
 import { Category, Product, User, Worker } from "../../../db/index.js"
 import { ApiFeature } from "../../utils/apiFeature.js"
 import { AppError } from "../../utils/appError.js"
-import { uploadToCloudinary } from "../../utils/cloudinary.js"
+import { deleteFromCloudinary, uploadToCloudinary } from "../../utils/cloudinary.js"
 import { messages } from "../../utils/constant/messages.js"
 import { comparePassword, hashPassword } from "../../utils/hashAndcompare.js"
 import { genrateToken } from "../../utils/token.js"
@@ -87,12 +87,13 @@ export const adminLogout = async (req, res, next) => {
 //admin add category
 export const AddCategory = async (req, res) => {
 
-    const { name } = req.body
+    const { name,arabicName } = req.body
     const createdBy = req.authUser.id
     const slug = slugify(name, { lower: true });
 
     const category = await Category.create({
         name,
+        arabicName,
         slug,
         createdBy: createdBy
     })
@@ -530,24 +531,24 @@ export const deleteProduct = async (req, res, next) => {
     const { id } = req.params;
 
     const product = await Product.findByPk(id);
+    
     if (!product) {
         return next(new AppError(messages.product.notfound, 404));
     }
-
     // Delete images from Cloudinary
     try {
         if (product.mainImage) {
             await deleteFromCloudinary(product.mainImage);
         }
-
+        
         if (product.subImages && product.subImages.length > 0) {
-
+            
             await Promise.all(product.subImages.map(async (url) => await deleteFromCloudinary(url)));
         }
     } catch (error) {
         return next(new AppError("Failed to delete images from Cloudinary", 500));
     }
-
+    
     // Delete product from database
     await product.destroy();
 
