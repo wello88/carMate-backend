@@ -3,7 +3,7 @@ import { AppError } from "../../utils/appError.js";
 
 
 export const startSession = async (req, res, next) => {
-    const { startDate } = req.body;
+    const { startDate,isAccepted } = req.body;
     if (!startDate) {
         return next(new AppError("startDate is required", 400));
     }
@@ -38,7 +38,10 @@ export const startSession = async (req, res, next) => {
         workerId: offer.workerId,
         offerId,
         startDate,
-    });
+        isAccepted:true,
+      });
+      
+
 
     res.status(201).json({
         status: "success",
@@ -47,11 +50,16 @@ export const startSession = async (req, res, next) => {
 };
 
 export const endSession = async (req, res, next) => {
-    const { endDate } = req.body;
+    const { endDate,isDone } = req.body;
     if (!endDate) {
         return next(new AppError("endDate is required", 400));
     }
-
+    if (isDone === undefined) {
+        return next(new AppError("isDone is required", 400));
+    }
+    if (typeof isDone !== "boolean") {
+        return next(new AppError("isDone must be a boolean", 400));
+    }
     const { sessionId } = req.params;
     if (!sessionId) {
         return next(new AppError("sessionId is required", 400));
@@ -71,8 +79,31 @@ export const endSession = async (req, res, next) => {
 
     // Update session with endDate and mark as done
     session.endDate = endDate;
-    session.isDone = true;
+    session.isDone = isDone;
     await session.save();
+
+    if(session.isDone===true){
+        const offer = await Offer.findByPk(session.offerId);
+        if (!offer) {
+            return next(new AppError("Offer not found", 404));
+        }
+        offer.isCompleted = true;
+        await offer.save();
+        const post = await Post.findByPk(session.postId);
+        if (!post) {
+            return next(new AppError("Post not found", 404));
+        }
+        post.isCompleted = true;
+        await post.save();
+
+      const closeAllSessions = await Session.update(
+            { closed: true },
+            { where: { postId: session.postId } }
+        );
+        if (!closeAllSessions) {
+            return next(new AppError("Failed to close all sessions", 500));
+        }  
+    }
 
     res.status(200).json({
         status: "success",
@@ -140,5 +171,4 @@ export const getMyOwnSessions = async (req, res, next) => {
       status: "success",
       data: { sessions },
     });
-  };
-  
+  }

@@ -8,6 +8,9 @@ export const createOffer = async (req, res, next) => {
     const { cash, note } = req.body;
     const workerId = req.authUser.id;
     const { postId } = req.params;
+    const checkStatus = await Post.findOne({ where: { id: postId } });
+    if (checkStatus.isCompleted == true) 
+    return next(new AppError('Post is already completed by another worker and cannot be offered again', 400));
 
     // Check if the post exists
     const post = await Post.findByPk(postId);

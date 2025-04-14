@@ -16,6 +16,7 @@ Session.init(
     postId: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'posts', key: 'id' } },
     workerId: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'workers', key: 'id' } },
     offerId: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'offers', key: 'id' } },
+    closed: { type: DataTypes.BOOLEAN, defaultValue: false },
     startDate: { type: DataTypes.STRING, allowNull: true },
     endDate: { type: DataTypes.STRING, allowNull: true },
     isDone: { type: DataTypes.BOOLEAN, defaultValue: false },

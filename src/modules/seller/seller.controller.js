@@ -76,7 +76,7 @@ export const AddProduct = async (req, res, next) => {
 //update owned products
 export const UpdateProduct = async (req, res, next) => {
     const {id} = req.params
-    const { title, slug, productLink, price, description,mainImage,subImages, categoryId } = req.body;
+    const { title, slug, productLink, price, description,mainImage,subImages, SubCategoryId } = req.body;
     const sellerId = req.authUser.id;
 
     //find belongs products to seller
@@ -110,8 +110,8 @@ export const UpdateProduct = async (req, res, next) => {
         product.description = description;
     }
 
-    if (categoryId) {
-        product.categoryId = categoryId;
+    if (SubCategoryId) {
+        product.SubCategoryId = SubCategoryId;
     }
     // Handle main image upload if provided
     if (req.files?.mainImage?.[0]) {

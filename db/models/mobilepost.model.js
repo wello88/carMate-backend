@@ -24,6 +24,8 @@ Post.init(
         key: 'id',
       },
     },
+    isCompleted: { type: DataTypes.BOOLEAN, defaultValue: false },
+
   },
   {
     sequelize,

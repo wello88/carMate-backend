@@ -13,7 +13,8 @@ Offer.init(
     workerId: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'users', key: 'id' } },
     postId: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'posts', key: 'id' } },
     cash: { type: DataTypes.DECIMAL, allowNull: false },
-    note: { type: DataTypes.TEXT, allowNull: false },
+    note: { type: DataTypes.STRING, allowNull: false },
+    isAccepted: { type: DataTypes.BOOLEAN, defaultValue: false },
   },
   { sequelize, modelName: 'Offer', tableName: 'offers', timestamps: true }
 );
