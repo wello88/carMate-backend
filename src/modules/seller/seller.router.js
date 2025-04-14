@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { asyncHandler } from "../../utils/appError.js";
-import { AddProduct, DeleteProduct, GetCategories, GetProducts, GetSellerProducts, GetSpecificProduct, UpdateProduct } from "./seller.controller.js";
+import { AddProduct, DeleteProduct, GetCategories, GetProducts, GetSellerProducts, GetSpecificProduct, GetSubCategories, UpdateProduct } from "./seller.controller.js";
 import { isAuthenticated } from "../../middleware/authentication.js";
 import { cloudupload } from "../../utils/multer.cloud.js";
 
@@ -46,6 +46,10 @@ SellerRouter.delete('/deleteProduct/:id',
 //get categories
 SellerRouter.get('/getCategories',
     asyncHandler(GetCategories)
+)
+
+SellerRouter.get('/getSubCategories/:categoryId',
+    asyncHandler(GetSubCategories)
 )
 
 //get products

@@ -8,6 +8,7 @@ import { comparePassword, hashPassword } from "../../utils/hashAndcompare.js"
 import { genrateToken } from "../../utils/token.js"
 import { sequelize } from "../../../db/connection.js"
 import slugify from 'slugify';
+import SubCategory from "../../../db/models/sub-category.js"
 
 
 
@@ -109,6 +110,37 @@ export const AddCategory = async (req, res) => {
 
 }
 
+
+//admin add subcategory
+export const AddSubCategory = async (req, res) => {
+
+    const { categoryId, name,arabicName } = req.body
+    const createdBy = req.authUser.id
+    const slug = slugify(name, { lower: true });
+
+    const subcategory = await SubCategory.create({
+        categoryId,
+        name,
+        arabicName,
+        slug,
+        createdBy: createdBy
+    })
+    if (!subcategory) {
+        return next(new AppError(messages.category.failtocreate, 400))
+    }
+    //retrive category from id
+    const category = await Category.findByPk(categoryId)
+    if (!category) {
+        return next(new AppError(messages.category.notfound, 404))
+    }
+    
+    res.status(201).json({
+        status: messages.subcategory.createSuccessfully,
+        data: {
+            subcategory,
+            category
+        }
+    })}
 
 //admin add user(customer, worker, seller) and if worker add specialization and location
 

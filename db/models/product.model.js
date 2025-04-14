@@ -2,6 +2,7 @@ import { Model, DataTypes } from 'sequelize'
 import { sequelize } from '../../db/connection.js'
 import Category from './category.model.js' // لو عايز تربطها بالـ Category
 import User from './user.model.js' // لو عايز تربطها بالـ User (createdBy)
+import SubCategory from './sub-category.js'
 
 class Product extends Model {}
 
@@ -18,7 +19,7 @@ Product.init(
     description: { type: DataTypes.TEXT, allowNull: true },
     arabicDescription: { type: DataTypes.TEXT, allowNull: true },
     createdBy: { type: DataTypes.INTEGER, allowNull: false }, // معرف المستخدم الذي أنشأ المنتج
-    categoryId: { type: DataTypes.INTEGER, allowNull: false }, // معرف الفئة (Category)
+    subCategoryId: { type: DataTypes.INTEGER, allowNull: false }, // معرف الفئة (Category)
   },  
   { sequelize, modelName: 'Product', tableName: 'products', timestamps: true }
 )
@@ -27,7 +28,7 @@ Product.init(
 Product.belongsTo(User, { foreignKey: 'createdBy', as: 'creator' })
 User.hasMany(Product, { foreignKey: 'createdBy', as: 'products' })
 
-Product.belongsTo(Category, { foreignKey: 'categoryId', as: 'category' })
-Category.hasMany(Product, { foreignKey: 'categoryId', as: 'products' })
+Product.belongsTo(SubCategory, { foreignKey: 'subCategoryId', as: 'Subcategory' })
+SubCategory.hasMany(Product, { foreignKey: 'subCategoryId', as: 'products' })
 
 export default Product

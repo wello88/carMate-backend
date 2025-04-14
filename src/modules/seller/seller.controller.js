@@ -4,6 +4,7 @@ import { messages } from "../../utils/constant/messages.js";
 import { uploadToCloudinary } from "../../utils/cloudinary.js";
 import { deleteFromCloudinary } from "../../utils/cloudinary.js"; // Function to delete images from Cloudinary
 import { ApiFeature } from "../../utils/apiFeature.js";
+import SubCategory from "../../../db/models/sub-category.js";
 
 
 //seller add product
@@ -239,14 +240,56 @@ export const GetCategories = async (req, res, next) => {
     if (!categories) {
         return next(new AppError(messages.category.notfound, 404));
     }
+    // Fetch all categories with their subcategories
+    const catrgory_with_subCat = await Promise.all(
+        categories.map(async (category) => {
+            const subcategories = await SubCategory.findAll({
+                where: { categoryId: category.id }
+            });
+            return { ...category.toJSON(), subcategories };
+        })
+    );
+
+    catrgory_with_subCat.forEach((category) => {
+        delete category.categoryId; // Remove the categoryId field from the response
+        delete category.createdAt; // Remove createdAt field if not needed
+        delete category.updatedAt; // Remove updatedAt field if not needed
+        delete category.createdBy; // Remove createdBy field if not needed
+    })
 
     return res.status(200).json({
         status: "success",
-        data: { categories }
+        data: { catrgory_with_subCat }
     })
 
 }
 
+
+export const GetSubCategories = async (req, res, next) => {
+    const { categoryId } = req.params; // Get category ID from query parameters
+
+    if (!categoryId) {
+        return next(new AppError("Category ID is required", 400));
+    }
+
+    const subCategories = await SubCategory.findAll({
+        where: { categoryId: categoryId } // Assuming you have a parentId field for subcategories
+    });
+    const category = await Category.findByPk(categoryId, {
+        attributes: ['id', 'name', 'arabicName', 'slug']
+    });
+    if (!category) {
+        return next(new AppError(messages.category.notfound, 404));
+    }
+    if (!subCategories) {
+        return next(new AppError(messages.category.notfound, 404));
+    }
+
+    return res.status(200).json({
+        status: "success",
+        data: { subCategories, category }
+    });
+}
 
 
 //get all products with apifetures
