@@ -293,41 +293,103 @@ export const GetSubCategories = async (req, res, next) => {
 
 
 //get all products with apifetures
-export const GetProducts = async (req, res, next) => {
+// export const GetProducts = async (req, res, next) => {
 
-    const apiFetures = new ApiFeature(Product, req.query)
-        .pagination()
-        .filter()
-        .search()
-        .sort()
-        .select()
+//     const apiFetures = new ApiFeature(Product, req.query)
+//         .pagination()
+//         .filter()
+//         .search()
+//         .sort()
+//         .select()
 
-    const result = await apiFetures.execute();
+//     const result = await apiFetures.execute();
 
-    if (!result) {
-        return next(new AppError(messages.product.notfound, 404));
-    }
+//     if (!result) {
+//         return next(new AppError(messages.product.notfound, 404));
+//     }
 
-    const userids = [...new Set(result.data.map(product => product.createdBy))];
-    const users = await User.findAll({
-        where: { id: userids },
-        attributes: ['id', 'firstName', 'lastName', 'email', 'profilePhoto', 'phone']
-    });
+//     const userids = [...new Set(result.data.map(product => product.createdBy))];
+//     const users = await User.findAll({
+//         where: { id: userids },
+//         attributes: ['id', 'firstName', 'lastName', 'email', 'profilePhoto', 'phone']
+//     });
 
-    const userMap = {};
-    users.forEach(user => {
-        userMap[user.id] = user.get({ plain: true });
+//     const userMap = {};
+//     users.forEach(user => {
+//         userMap[user.id] = user.get({ plain: true });
     
-    })
+//     })
 
-    result.data.forEach(product => {
-        product.createdBy = userMap[product.createdBy] || null;
-    }
-    )
+//     result.data.forEach(product => {
+//         product.createdBy = userMap[product.createdBy] || null;
+//     }
+//     )
 
-    return res.status(200).json({
-        status: "success",
-        ...result
+//     return res.status(200).json({
+//         status: "success",
+//         ...result
         
-    })
-}
+//     })
+// }
+
+
+
+
+export const GetProducts = async (req, res, next) => {
+    try {
+        const apiFetures = new ApiFeature(Product, req.query)
+            .pagination()
+            .filter()
+            .search()
+            .sort()
+            .select();
+
+        // Include subcategory and category in the query
+        apiFetures.options.include = [
+            {
+                model: SubCategory,
+                as: 'Subcategory',
+                attributes: ['id', 'name', 'arabicName', 'slug'],
+                include: [{
+                    model: Category,
+                    as: 'category',
+                    attributes: ['id', 'name', 'arabicName', 'slug']
+                }]
+            }
+        ];
+
+        const result = await apiFetures.execute();
+
+        if (!result) {
+            return next(new AppError(messages.product.notfound, 404));
+        }
+
+        // Get user details
+        const userids = [...new Set(result.data.map(product => product.createdBy))];
+        const users = await User.findAll({
+            where: { id: userids },
+            attributes: ['id', 'firstName', 'lastName', 'email', 'profilePhoto', 'phone']
+        });
+
+        const userMap = {};
+        users.forEach(user => {
+            userMap[user.id] = user.get({ plain: true });
+        });
+
+        // Transform the response
+        result.data = result.data.map(product => {
+            const plainProduct = product.get({ plain: true });
+            return {
+                ...plainProduct,
+                createdBy: userMap[plainProduct.createdBy] || null
+            };
+        });
+
+        return res.status(200).json({
+            status: "success",
+            ...result
+        });
+    } catch (error) {
+        next(error);
+    }
+};
