@@ -9,7 +9,7 @@ import SubCategory from "../../../db/models/sub-category.js";
 
 //seller add product
 export const AddProduct = async (req, res, next) => {
-    const { title,arbicTitle ,slug, productLink, price, description,arabicDescription ,categoryId } = req.body;
+    const { title,arabicTitle ,slug, productLink, price, description,arabicDescription ,categoryId } = req.body;
     const createdBy = req.authUser.id;
 
     if (req.authUser.role !== "seller") {
@@ -76,7 +76,7 @@ export const AddProduct = async (req, res, next) => {
 //update owned products
 export const UpdateProduct = async (req, res, next) => {
     const {id} = req.params
-    const { title, slug, productLink, price, description,mainImage,subImages, SubCategoryId } = req.body;
+    const { title, arabicTitle,slug,arabicDescription, productLink, price, description,mainImage,subImages, SubCategoryId } = req.body;
     const sellerId = req.authUser.id;
 
     //find belongs products to seller
@@ -93,6 +93,13 @@ export const UpdateProduct = async (req, res, next) => {
     if (title) {
         product.title = title;
     }
+    if (arabicTitle) {
+        product.arabicTitle = arabicTitle;
+    }
+    if (arabicDescription) {
+        product.arabicDescription = arabicDescription;
+    }
+    
 
     if (slug) {
         product.slug = slug;
@@ -293,81 +300,53 @@ export const GetSubCategories = async (req, res, next) => {
 
 
 //get all products with apifetures
-// export const GetProducts = async (req, res, next) => {
-
-//     const apiFetures = new ApiFeature(Product, req.query)
-//         .pagination()
-//         .filter()
-//         .search()
-//         .sort()
-//         .select()
-
-//     const result = await apiFetures.execute();
-
-//     if (!result) {
-//         return next(new AppError(messages.product.notfound, 404));
-//     }
-
-//     const userids = [...new Set(result.data.map(product => product.createdBy))];
-//     const users = await User.findAll({
-//         where: { id: userids },
-//         attributes: ['id', 'firstName', 'lastName', 'email', 'profilePhoto', 'phone']
-//     });
-
-//     const userMap = {};
-//     users.forEach(user => {
-//         userMap[user.id] = user.get({ plain: true });
-    
-//     })
-
-//     result.data.forEach(product => {
-//         product.createdBy = userMap[product.createdBy] || null;
-//     }
-//     )
-
-//     return res.status(200).json({
-//         status: "success",
-//         ...result
-        
-//     })
-// }
-
-
-
-
 export const GetProducts = async (req, res, next) => {
     try {
-        const apiFetures = new ApiFeature(Product, req.query)
+        const { categoryId, subCategoryId } = req.query;
+        
+        // Remove categoryId from query params since we'll handle it separately
+        const filteredQuery = { ...req.query };
+        delete filteredQuery.categoryId;
+        
+        const apiFetures = new ApiFeature(Product, filteredQuery)
             .pagination()
             .filter()
             .search()
             .sort()
             .select();
 
-        // Include subcategory and category in the query
-        apiFetures.options.include = [
-            {
-                model: SubCategory,
-                as: 'Subcategory',
-                attributes: ['id', 'name', 'arabicName', 'slug'],
-                include: [{
-                    model: Category,
-                    as: 'category',
-                    attributes: ['id', 'name', 'arabicName', 'slug']
-                }]
-            }
-        ];
+        // Setup includes and where clauses
+        apiFetures.options.include = [{
+            model: SubCategory,
+            as: 'Subcategory',
+            attributes: ['id', 'name', 'arabicName', 'slug'],
+            required: true, // This makes it an INNER JOIN
+            where: categoryId ? { categoryId } : {},
+            include: [{
+                model: Category,
+                as: 'category',
+                attributes: ['id', 'name', 'arabicName', 'slug']
+            }]
+        }];
+
+        // Add subCategoryId to where clause if provided
+        if (subCategoryId) {
+            apiFetures.options.where = {
+                ...apiFetures.options.where,
+                subCategoryId
+            };
+        }
 
         const result = await apiFetures.execute();
 
-        if (!result) {
+        if (!result?.data || result.data.length === 0) {
             return next(new AppError(messages.product.notfound, 404));
         }
 
         // Get user details
-        const userids = [...new Set(result.data.map(product => product.createdBy))];
+        const userIds = [...new Set(result.data.map(product => product.createdBy))];
         const users = await User.findAll({
-            where: { id: userids },
+            where: { id: userIds },
             attributes: ['id', 'firstName', 'lastName', 'email', 'profilePhoto', 'phone']
         });
 
@@ -376,8 +355,8 @@ export const GetProducts = async (req, res, next) => {
             userMap[user.id] = user.get({ plain: true });
         });
 
-        // Transform the response
-        result.data = result.data.map(product => {
+        // Transform response
+        const transformedData = result.data.map(product => {
             const plainProduct = product.get({ plain: true });
             return {
                 ...plainProduct,
@@ -387,8 +366,13 @@ export const GetProducts = async (req, res, next) => {
 
         return res.status(200).json({
             status: "success",
-            ...result
+            count: result.count,
+            data: transformedData,
+            page: result.page,
+            size: result.size,
+            totalPages: result.totalPages
         });
+
     } catch (error) {
         next(error);
     }
