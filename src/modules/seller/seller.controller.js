@@ -29,7 +29,7 @@ export const AddProduct = async (req, res, next) => {
     const product = await Product.create({
         title,
         arabicTitle,
-        slug,
+        slug: slugify(slug, { lower: true }),
         productLink,
         price,
         mainImage: "", // Placeholder, will update later
