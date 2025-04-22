@@ -9,7 +9,7 @@ import SubCategory from "../../../db/models/sub-category.js";
 
 //seller add product
 export const AddProduct = async (req, res, next) => {
-    const { title,arabicTitle ,slug, productLink, price, description,arabicDescription ,categoryId } = req.body;
+    const { title,arabicTitle ,slug, productLink, price, description,arabicDescription ,subCategoryId } = req.body;
     const createdBy = req.authUser.id;
 
     if (req.authUser.role !== "seller") {
@@ -17,7 +17,7 @@ export const AddProduct = async (req, res, next) => {
     }
 
     // Validate required fields before any uploads
-    if (!title || !slug  || !price || !description || !categoryId) {
+    if (!title || !slug  || !price || !description || !subCategoryId) { 
         return next(new AppError("All fields are required", 400));
     }
 
@@ -37,7 +37,7 @@ export const AddProduct = async (req, res, next) => {
         description,
         arabicDescription,
         createdBy,
-        categoryId
+        subCategoryId
     });
 
     if (!product) {
