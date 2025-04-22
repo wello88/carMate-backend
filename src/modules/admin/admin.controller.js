@@ -111,6 +111,47 @@ export const AddCategory = async (req, res) => {
 }
 
 
+//admin get all categories with api fetures
+export const getAllCategories = async (req, res, next) => {
+    const apiFetures = new ApiFeature(Category, req.query)
+        .pagination()
+        .filter()
+        .sort()
+        .select()
+
+    const result = await apiFetures.execute();
+
+    if (!result) {
+        return next(new AppError(messages.category.notfound, 404));
+    }
+
+    res.status(200).json({
+        status: "success",
+        ...result
+    })
+}
+
+
+//admin delete category cascadely
+export const deleteCategory = async (req, res, next) => {
+    const categoryId = req.params.id
+    const category = await Category.findByPk(categoryId)
+    if (!category) {
+        return next(new AppError(messages.category.notfound, 404));
+
+    }
+    
+    // Delete category from database
+    await category.destroy();
+
+    res.status(200).json({
+        status: messages.category.deleteSuccessfully,
+        data: {
+            category
+        }
+    })
+}
+
 //admin add subcategory
 export const AddSubCategory = async (req, res) => {
 

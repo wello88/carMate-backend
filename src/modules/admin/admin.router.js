@@ -1,13 +1,17 @@
 import { Router } from 'express';
 import { isAuthenticated } from '../../middleware/authentication.js';
 import { asyncHandler } from '../../utils/appError.js';
-import { AddCategory, AddProduct, addUser, adminLogin, adminLogout, AddSubCategory,deleteProduct, deleteUser, getAllCustomerUsers, getAllProducts, getAllSellerUsers, getAllWorkerUsers, getSpecificUser, updateProduct, updateUser } from './admin.controller.js';
+import { AddCategory, AddProduct, addUser, adminLogin, adminLogout, AddSubCategory,deleteProduct, deleteUser, getAllCustomerUsers, getAllProducts, getAllSellerUsers, getAllWorkerUsers, getSpecificUser, updateProduct, updateUser, deleteCategory, getAllCategories } from './admin.controller.js';
 import { isAdmin } from '../../middleware/validation.js';
 import { cloudupload } from '../../utils/multer.cloud.js';
 
 const adminRouter = Router();   
 //ADD CATEGORY
 adminRouter.post('/addCategory',isAuthenticated(),isAdmin,asyncHandler(AddCategory))
+//GET ALL CATEGORIES
+adminRouter.get('/getAllCategories',isAuthenticated(),isAdmin,asyncHandler(getAllCategories))
+//delete category
+adminRouter.delete('/deleteCategory/:id',isAuthenticated(),isAdmin,asyncHandler(deleteCategory))
 
 //ADD SUBCATEGORY
 adminRouter.post('/addSubCategory',isAuthenticated(),isAdmin,asyncHandler(AddSubCategory))
