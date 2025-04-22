@@ -5,6 +5,8 @@ import { uploadToCloudinary } from "../../utils/cloudinary.js";
 import { deleteFromCloudinary } from "../../utils/cloudinary.js"; // Function to delete images from Cloudinary
 import { ApiFeature } from "../../utils/apiFeature.js";
 import SubCategory from "../../../db/models/sub-category.js";
+import slugify from 'slugify';
+
 
 
 //seller add product
@@ -17,7 +19,7 @@ export const AddProduct = async (req, res, next) => {
     }
 
     // Validate required fields before any uploads
-    if (!title || !slug  || !price || !description || !subCategoryId) { 
+    if (!title || !price || !description || !subCategoryId) { 
         return next(new AppError("All fields are required", 400));
     }
 
