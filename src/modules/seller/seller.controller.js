@@ -11,8 +11,9 @@ import slugify from 'slugify';
 
 //seller add product
 export const AddProduct = async (req, res, next) => {
-    const { title,arabicTitle ,slug, productLink, price, description,arabicDescription ,subCategoryId } = req.body;
+    const { title,arabicTitle , productLink, price, description,arabicDescription ,subCategoryId } = req.body;
     const createdBy = req.authUser.id;
+    const slug = slugify(title, { lower: true, strict: true }); // Generate slug from title
 
     if (req.authUser.role !== "seller") {
         return next(new AppError("Unauthorized access", 403));
@@ -31,7 +32,7 @@ export const AddProduct = async (req, res, next) => {
     const product = await Product.create({
         title,
         arabicTitle,
-        slug: slugify(slug, { lower: true }),
+        slug:slug,
         productLink,
         price,
         mainImage: "", // Placeholder, will update later
