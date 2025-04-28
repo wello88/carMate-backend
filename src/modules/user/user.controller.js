@@ -1,5 +1,5 @@
 import { sequelize } from "../../../db/connection.js"
-import { Reminder, User, Car, Community, Winch, Worker, PostReview } from "../../../db/index.js"
+import { Reminder, User, Car, Community, Winch, Worker, PostReview, Notification } from "../../../db/index.js"
 import Review from "../../../db/models/review.model.js"
 import { AppError } from "../../utils/appError.js"
 import { uploadToCloudinary } from "../../utils/cloudinary.js"
@@ -400,6 +400,14 @@ export const LikePost = async (req, res, next) => {
         if (!updatedPost) {
             return next(new AppError('Failed to update likes', 500));
         }
+
+
+         // Notify the customer who liked the post
+        await Notification.create({
+            userId: post.userId,
+            message: ` ${req.authUser.firstName} has liked your post: ${post.postContent}. Check the post for more details.`,
+        });
+
 
         return res.status(200).json({
             status: 'success',

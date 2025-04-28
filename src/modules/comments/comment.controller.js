@@ -1,6 +1,6 @@
 import { messages } from "../../utils/constant/messages.js";
 import { AppError } from "../../utils/appError.js";
-import { Community, Comment, User } from "../../../db/index.js"; // Ensure Comment model exists
+import { Community, Comment, User, Notification } from "../../../db/index.js"; // Ensure Comment model exists
 import { where } from "sequelize";
 import { sequelize } from "../../../db/connection.js";
 
@@ -33,6 +33,11 @@ export const createComment = async (req, res, next) => {
             { comment: sequelize.literal('comment + 1') },
             { where: { id: postId } }
         );
+         // Notify the customer who created the post
+        await Notification.create({
+            userId: post.userId,
+            message: `${req.authUser.firstName} has commented on your post: ${post.postContent}, by "${commentContent}". Check the post for more details.`,
+        });
 
         return res.status(201).json({
             status: "success",
