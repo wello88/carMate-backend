@@ -49,69 +49,6 @@ export const startSession = async (req, res, next) => {
     });
 };
 
-// export const endSession = async (req, res, next) => {
-//     const { endDate,isDone } = req.body;
-//     if (!endDate) {
-//         return next(new AppError("endDate is required", 400));
-//     }
-//     if (isDone === undefined) {
-//         return next(new AppError("isDone is required", 400));
-//     }
-//     if (typeof isDone !== "boolean") {
-//         return next(new AppError("isDone must be a boolean", 400));
-//     }
-//     const { sessionId } = req.params;
-//     if (!sessionId) {
-//         return next(new AppError("sessionId is required", 400));
-//     }
-
-//     // Find the session
-//     const session = await Session.findByPk(sessionId);
-
-//     if (!session) {
-//         return next(new AppError("Session not found", 404));
-//     }
-
-//     // Ensure endDate is not set already
-//     if (session.endDate) {
-//         return next(new AppError("End date is already set and cannot be modified.", 400));
-//     }
-
-//     // Update session with endDate and mark as done
-//     session.endDate = endDate;
-//     session.isDone = isDone;
-//     await session.save();
-
-//     if(session.isDone===true){
-//         const offer = await Offer.findByPk(session.postId);
-//         if (!offer) {
-//             return next(new AppError("Offer not found", 404));
-//         }
-//         offer.isAccepted = true;
-//         await offer.save();
-//         const post = await Post.findByPk(session.postId);
-//         if (!post) {
-//             return next(new AppError("Post not found", 404));
-//         }
-//         post.isCompleted = true;
-//         await post.save();
-
-//       const closeAllSessions = await Session.update(
-//             { closed: true },
-//             { where: { postId: session.postId } }
-//         );
-//         if (!closeAllSessions) {
-//             return next(new AppError("Failed to close all sessions", 500));
-//         }  
-//     }
-
-//     res.status(200).json({
-//         status: "success",
-//         data: { session },
-//     });
-// };
-
-
 
 export const endSession = async (req, res, next) => {
   try {
@@ -128,9 +65,6 @@ export const endSession = async (req, res, next) => {
       if (typeof isDone !== "boolean") {
           return next(new AppError("isDone must be a boolean", 400));
       }
-      // if (!sessionId) {
-      //     return next(new AppError("sessionId is required", 400));
-      // }
 
       // Find the session
       const session = await Session.findByPk(sessionId);

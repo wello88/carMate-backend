@@ -400,11 +400,13 @@ export const LikePost = async (req, res, next) => {
         if (!updatedPost) {
             return next(new AppError('Failed to update likes', 500));
         }
-
+        const userphoto = req.authUser.profilePhoto ? req.authUser.profilePhoto : null;
 
          // Notify the customer who liked the post
         await Notification.create({
             userId: post.userId,
+        
+    
             message: ` ${req.authUser.firstName} has liked your post: ${post.postContent}. Check the post for more details.`,
         });
 
@@ -413,6 +415,9 @@ export const LikePost = async (req, res, next) => {
             status: 'success',
             message: isLiked ? 'Post unliked successfully' : 'Post liked successfully',
             data: {
+                firstName: req.authUser.firstName,
+                userPhoto: userphoto,
+                type: 'like',
                 isLiked: !isLiked,
                 likesCount: updatedLikes.length,
                 likes: updatedLikes
