@@ -405,7 +405,6 @@ export const LikePost = async (req, res, next) => {
          // Notify the customer who liked the post
         await Notification.create({
             userId: post.userId,
-        
     
             message: ` ${req.authUser.firstName} has liked your post: ${post.postContent}. Check the post for more details.`,
         });

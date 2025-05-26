@@ -234,5 +234,6 @@ export const initApp =  (app,express) => {
     app.use('/notification', allRouters.notificationRouter)
     app.use('/comment', allRouters.commentRouter)
     app.use('/session', allRouters.sessionRouter)
+    app.use('/', allRouters.contactUsRouter)
     app.use(globalErrorHandler)
 }   

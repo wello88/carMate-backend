@@ -11,7 +11,7 @@ import offerRouter from "./modules/offer/offer.router.js";
 import notificationRouter from "./modules/notification/notification.routes.js";
 import commentRouter from "./modules/comments/comment.routes.js";
 import sessionRouter from "./modules/session/session.routes.js";
-
+import contactUsRouter from "./modules/contact-us/contactUs.routes.js";
 
 export {
 
@@ -27,7 +27,8 @@ export {
     offerRouter,
     notificationRouter,
     commentRouter,
-    sessionRouter
+    sessionRouter,
+    contactUsRouter
 }
 
 
