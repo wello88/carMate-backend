@@ -34,12 +34,17 @@ export const createOffer = async (req, res, next) => {
         // Create offer
         const offer = await Offer.create({ workerId, postId, cash, note });
 
+        // Get the first profile photo from the array or null
+        const profilePicture = Array.isArray(worker.User.profilePhoto) && worker.User.profilePhoto.length > 0 
+            ? worker.User.profilePhoto[0] 
+            : null;
+
         // Notify the customer who created the post
         await Notification.create({
             userId: checkStatus.userId,
             firstName: worker.User.firstName,
             lastName: worker.User.lastName,
-            profilePicture: worker.User.profilePhoto,
+            profilePicture: profilePicture,
             type: 'offer',
             arabicMessage: `لقد قدم ${worker.User.firstName} عرضًا لمساعدتك في منشورك: ${checkStatus.postContent}. تحقق من تفاصيل العرض.`,
             message: `${worker.User.firstName} has offered help on your post: ${checkStatus.postContent}. Check the offer details.`,
