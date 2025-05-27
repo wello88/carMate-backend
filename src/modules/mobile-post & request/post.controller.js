@@ -118,7 +118,6 @@ export const getPost = async (req, res, next) => {
 };
 
 
-
 // get own posts
 export const getOwnPosts = async (req, res, next) => {
     const userId = req.authUser.id;

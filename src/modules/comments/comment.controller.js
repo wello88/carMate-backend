@@ -44,12 +44,17 @@ export const createComment = async (req, res, next) => {
             { where: { id: postId } }
         );
 
+        // Get the first profile photo from the array or null
+        const profilePicture = Array.isArray(commenter.profilePhoto) && commenter.profilePhoto.length > 0 
+            ? commenter.profilePhoto[0] 
+            : null;
+
         // Notify the post owner
         await Notification.create({
-            userId: post.userId, // Post owner's ID
-            firstName: commenter.firstName, // Commenter's first name
-            lastName: commenter.lastName, // Commenter's last name
-            profilePicture: commenter.profilePhoto, // Commenter's profile photo
+            userId: post.userId,
+            firstName: commenter.firstName,
+            lastName: commenter.lastName,
+            profilePicture: profilePicture,
             type: "comment",
             message: `${commenter.firstName} has commented on your post: ${post.postContent}, by "${commentContent}". Check the post for more details..`,
             arabicMessage: `${commenter.firstName} لقد علق على منشورك: ${post.postContent}, ب: "${commentContent}". راجع المنشور لمزيد من التفاصيل..`,
