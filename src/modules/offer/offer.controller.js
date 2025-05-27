@@ -4,34 +4,55 @@ import Offer from "../../../db/models/offer.model.js";
 import { AppError } from "../../utils/appError.js";
 
 export const createOffer = async (req, res, next) => {
-  
-    const { cash, note } = req.body;
-    const workerId = req.authUser.id;
-    const { postId } = req.params;
-    const checkStatus = await Post.findOne({ where: { id: postId } });
-    if (checkStatus.isCompleted == true) 
-    return next(new AppError('Post is already completed by another worker and cannot be offered again', 400));
+    try {
+        const { cash, note } = req.body;
+        const workerId = req.authUser.id;
+        const { postId } = req.params;
 
-    // Check if the post exists
-    const post = await Post.findByPk(postId);
-    if (!post) return next(new AppError('Post not found', 404));
+        // Check post status
+        const checkStatus = await Post.findOne({ where: { id: postId } });
+        if (!checkStatus) {
+            return next(new AppError('Post not found', 404));
+        }
+        if (checkStatus.isCompleted === true) {
+            return next(new AppError('Post is already completed by another worker and cannot be offered again', 400));
+        }
 
-    // Create offer
-    const offer = await Offer.create({ workerId, postId, cash, note });
+        // Get worker details for notification
+        const worker = await Worker.findOne({
+            where: { id: workerId },
+            include: [{
+                model: User,
+                attributes: ['firstName', 'lastName', 'profilePhoto']
+            }]
+        });
 
-    // Notify the customer who created the post
-    await Notification.create({
-      userId: post.userId,
-      message: `A worker has offered help on your post: ${post.postContent}. Check the offer details.`,
-    });
+        if (!worker) {
+            return next(new AppError('Worker not found', 404));
+        }
 
-    res.status(201).json({
-      status: 'success',
-      data: { offer },
-    });
- 
+        // Create offer
+        const offer = await Offer.create({ workerId, postId, cash, note });
+
+        // Notify the customer who created the post
+        await Notification.create({
+            userId: checkStatus.userId,
+            firstName: worker.User.firstName,
+            lastName: worker.User.lastName,
+            profilePicture: worker.User.profilePhoto,
+            type: 'offer',
+            arabicMessage: `لقد قدم ${worker.User.firstName} عرضًا لمساعدتك في منشورك: ${checkStatus.postContent}. تحقق من تفاصيل العرض.`,
+            message: `${worker.User.firstName} has offered help on your post: ${checkStatus.postContent}. Check the offer details.`,
+        });
+
+        res.status(201).json({
+            status: 'success',
+            data: { offer }
+        });
+    } catch (error) {
+        next(error);
+    }
 };
-
 
 
 

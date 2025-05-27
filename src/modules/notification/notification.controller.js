@@ -13,6 +13,7 @@ export const getNotifications = async (req, res, next) => {
 
     res.status(200).json({
       status: 'success',
+
       data: { notifications },
     });
   } catch (error) {
@@ -47,3 +48,42 @@ export const markNotificationAsRead = async (req, res, next) => {
     next(error);
   }
 };
+
+//delete one notification 
+export const deleteNotification = async (req, res, next) => {
+  const { notificationId } = req.params;
+  const userId = req.authUser.id;
+
+  // Find notification
+  const notification = await Notification.findOne({
+    where: { id: notificationId, userId },
+  });
+
+  if (!notification) {
+    return next(new AppError('Notification not found', 404));
+  }
+
+  // Delete notification
+  await notification.destroy(); 
+
+  return res.status(200).json({
+    status: 'success',
+    message: 'Notification deleted successfully',
+  });
+
+}
+
+//delete all notifications
+export const deleteAllNotifications = async (req, res, next) => {
+  const userId = req.authUser.id;
+
+  // Delete all notifications for the user
+  await Notification.destroy({
+    where: { userId },
+  });
+
+  res.status(204).json({
+    status: 'success',
+    message: 'All notifications deleted successfully',
+  });
+}

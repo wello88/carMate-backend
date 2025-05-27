@@ -28,6 +28,32 @@ export const sendEmail = async (email, token) => {
 };
 
 
+
+export const sendCustomerSupportEmail = async ({ to, subject, html }) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: `"CARMATE SUPPORT" <${process.env.GMAIL_USER}>`,
+      to,
+      subject,
+      html,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    return info;
+  } catch (error) {
+    console.error('Customer support email failed:', error);
+    throw new Error('Failed to send customer support email');
+  }
+};
+
 export const sendEmailForgetPassword = async ({ to = '', subject = '', html = '' }) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",

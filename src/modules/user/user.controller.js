@@ -377,15 +377,42 @@ export const LikePost = async (req, res, next) => {
             return next(new AppError(messages.post.notFound, 404));
         }
 
+        // Get user who is liking the post
+        const liker = await User.findByPk(userId, {
+            attributes: ['id', 'firstName', 'lastName', 'profilePhoto']
+        });
+
+        if (!liker) {
+            return next(new AppError('User not found', 404));
+        }
+
         // Ensure likes is an array
         let updatedLikes = Array.isArray(post.likes) ? [...post.likes] : [];
         
         // Toggle like status
         const isLiked = updatedLikes.includes(userId);
         if (isLiked) {
+            // Unlike: Remove userId from likes array
             updatedLikes = updatedLikes.filter(id => id !== userId);
         } else {
+            // Like: Add userId to likes array and send notification
             updatedLikes.push(userId);
+
+            // Get the first profile photo from the array or null
+            const profilePicture = Array.isArray(liker.profilePhoto) && liker.profilePhoto.length > 0 
+                ? liker.profilePhoto[0] 
+                : null;
+
+            // Only send notification when liking (not unliking)
+            await Notification.create({
+                userId: post.userId, // Post owner receives the notification
+                firstName: liker.firstName,
+                lastName: liker.lastName,
+                profilePicture: profilePicture,
+                type: 'like',
+                message: `${liker.firstName} has liked your post: ${post.postContent}. Check the post for more details.`,
+                arabicMessage: `${liker.firstName} قام بالاعجاب بمنشورك: ${post.postContent}. راجع المنشور لمزيد من التفاصيل.`,
+            });
         }
 
         // Update post with new likes array
@@ -400,22 +427,13 @@ export const LikePost = async (req, res, next) => {
         if (!updatedPost) {
             return next(new AppError('Failed to update likes', 500));
         }
-        const userphoto = req.authUser.profilePhoto ? req.authUser.profilePhoto : null;
-
-         // Notify the customer who liked the post
-        await Notification.create({
-            userId: post.userId,
-    
-            message: ` ${req.authUser.firstName} has liked your post: ${post.postContent}. Check the post for more details.`,
-        });
-
 
         return res.status(200).json({
             status: 'success',
             message: isLiked ? 'Post unliked successfully' : 'Post liked successfully',
             data: {
-                firstName: req.authUser.firstName,
-                userPhoto: userphoto,
+                firstName: liker.firstName,
+                userPhoto: liker.profilePhoto?.[0] || null,
                 type: 'like',
                 isLiked: !isLiked,
                 likesCount: updatedLikes.length,
@@ -426,8 +444,6 @@ export const LikePost = async (req, res, next) => {
         next(error);
     }
 };
-
-
 
 
 

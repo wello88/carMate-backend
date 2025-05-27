@@ -13,7 +13,7 @@ User.init(
     lastName: { type: DataTypes.STRING, allowNull: false },
     email: { type: DataTypes.STRING, allowNull: false, unique: true },
     password: { type: DataTypes.STRING, allowNull: false },
-    phone: { type: DataTypes.STRING }, //TODO : add phone number validation ON SELLER(required to seller)
+    phone: { type: DataTypes.STRING }, 
     profilePhoto: { type: DataTypes.JSONB, allowNull: true , defaultValue: [process.env.SECURE_URL]},
     status: { type: DataTypes.ENUM('verified', 'pending', 'blocked'), defaultValue: 'pending' },
     role: { type: DataTypes.ENUM('seller', 'worker', 'admin', 'customer', 'superadmin'), allowNull: false },

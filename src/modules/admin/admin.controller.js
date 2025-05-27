@@ -244,6 +244,43 @@ export const addUser = async (req, res, next) => {
 };
 
 
+export const getAllSubCategories = async (req, res, next) => {
+    const apiFetures = new ApiFeature(SubCategory, req.query)
+        .pagination()
+        .filter()
+        .sort()
+        .select()
+
+    const result = await apiFetures.execute();
+
+    if (!result) {
+        return next(new AppError(messages.subcategory.notfound, 404));
+    }
+
+    res.status(200).json({
+        status: "success",
+        ...result
+    })
+}
+
+
+export const deleteSubCategory = async (req, res, next) => {
+    const subCategoryId = req.params.id
+    const subCategory = await SubCategory.findByPk(subCategoryId)
+    if (!subCategory) {
+        return next(new AppError(messages.subcategory.notfound, 404));
+    }
+    
+    // Delete subcategory from database
+    await subCategory.destroy();
+
+    res.status(200).json({
+        status: messages.subcategory.deleteSuccessfully,
+        data: {
+            subCategory
+        }
+    })
+}
 
 //admin update user
 export const updateUser = async (req, res, next) => {

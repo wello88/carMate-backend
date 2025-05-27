@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { isAuthenticated } from '../../middleware/authentication.js';
 import { asyncHandler } from '../../utils/appError.js';
-import { AddCategory, AddProduct, addUser, adminLogin, adminLogout, AddSubCategory,deleteProduct, deleteUser, getAllCustomerUsers, getAllProducts, getAllSellerUsers, getAllWorkerUsers, getSpecificUser, updateProduct, updateUser, deleteCategory, getAllCategories } from './admin.controller.js';
+import { AddCategory, AddProduct, addUser, adminLogin, adminLogout, AddSubCategory,deleteProduct, deleteUser, getAllCustomerUsers, getAllProducts, getAllSellerUsers, getAllWorkerUsers, getSpecificUser, updateProduct, updateUser, deleteCategory, getAllCategories, getAllSubCategories, deleteSubCategory } from './admin.controller.js';
 import { isAdmin } from '../../middleware/validation.js';
 import { cloudupload } from '../../utils/multer.cloud.js';
 
@@ -12,6 +12,13 @@ adminRouter.post('/addCategory',isAuthenticated(),isAdmin,asyncHandler(AddCatego
 adminRouter.get('/getAllCategories',isAuthenticated(),isAdmin,asyncHandler(getAllCategories))
 //delete category
 adminRouter.delete('/deleteCategory/:id',isAuthenticated(),isAdmin,asyncHandler(deleteCategory))
+//delete subcategory
+adminRouter.delete('/deleteSubCategory/:id',isAuthenticated(),isAdmin,asyncHandler(deleteSubCategory))
+//Get all subcategories (admin)
+adminRouter.get('/getAllSubCategories',isAuthenticated(),isAdmin,asyncHandler(getAllSubCategories)) 
+
+
+
 
 //ADD SUBCATEGORY
 adminRouter.post('/addSubCategory',isAuthenticated(),isAdmin,asyncHandler(AddSubCategory))

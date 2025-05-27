@@ -1,4 +1,6 @@
 import ContactUs from "../../../db/models/contactUs.model.js";
+import { sendCustomerSupportEmail } from "../../utils/email.js";
+import { customerSupportTemplate } from "../../utils/htmlTemplate.js";
 
 export const submitContactForm = async (req, res) => {
 
@@ -23,6 +25,20 @@ export const submitContactForm = async (req, res) => {
             message: "Failed to submit contact form"
         });
     }
+    //send email to customer support c2122m0402@gmail.com
+ const emailData = {
+    to: "c2122m0402@gmail.com", // Customer Support Email
+    subject: "🆕 New Contact Form Submission",
+    html: customerSupportTemplate({ name, email, phoneNumber, message })
+  };
+
+  try {
+    await sendCustomerSupportEmail(emailData);
+  } catch (err) {
+    console.error("Failed to send contact form email:", err);
+  }
+
+
     return res.status(201).json({
         success: true,
         message: "Contact form submitted successfully",

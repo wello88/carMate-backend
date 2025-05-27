@@ -301,6 +301,24 @@ export const GetSubCategories = async (req, res, next) => {
     });
 }
 
+export const getAllSubCategories = async (req, res, next) => {
+    const apiFetures = new ApiFeature(SubCategory, req.query)
+        .pagination()
+        .filter()
+        .sort()
+        .select()
+
+    const result = await apiFetures.execute();
+
+    if (!result) {
+        return next(new AppError(messages.subcategory.notfound, 404));
+    }
+
+    res.status(200).json({
+        status: "success",
+        ...result
+    })
+}
 
 //get all products with apifetures
 export const GetProducts = async (req, res, next) => {

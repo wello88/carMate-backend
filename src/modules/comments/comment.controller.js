@@ -7,7 +7,7 @@ import { sequelize } from "../../../db/connection.js";
 // ✅ Create a Comment
 export const createComment = async (req, res, next) => {
     try {
-        const postId = req.params.postId
+        const postId = req.params.postId;
         const { commentContent } = req.body;
         const userId = req.authUser.id;
 
@@ -16,10 +16,19 @@ export const createComment = async (req, res, next) => {
             return next(new AppError(messages.comment.contentRequired, 400));
         }
 
-        // Check if post exists
+        // Check if post exists and get post owner info
         const post = await Community.findByPk(postId);
         if (!post) {
             return next(new AppError(messages.post.notFound, 404));
+        }
+
+        // Get commenter's details
+        const commenter = await User.findByPk(userId, {
+            attributes: ['id', 'firstName', 'lastName', 'profilePhoto']
+        });
+
+        if (!commenter) {
+            return next(new AppError('User not found', 404));
         }
 
         // Create comment
@@ -28,15 +37,22 @@ export const createComment = async (req, res, next) => {
             userId,
             commentContent
         });
-        // In createComment controller
+
+        // Update comment count
         await Community.update(
             { comment: sequelize.literal('comment + 1') },
             { where: { id: postId } }
         );
-         // Notify the customer who created the post
+
+        // Notify the post owner
         await Notification.create({
-            userId: post.userId,
-            message: `${req.authUser.firstName} has commented on your post: ${post.postContent}, by "${commentContent}". Check the post for more details.`,
+            userId: post.userId, // Post owner's ID
+            firstName: commenter.firstName, // Commenter's first name
+            lastName: commenter.lastName, // Commenter's last name
+            profilePicture: commenter.profilePhoto, // Commenter's profile photo
+            type: "comment",
+            message: `${commenter.firstName} has commented on your post: ${post.postContent}, by "${commentContent}". Check the post for more details..`,
+            arabicMessage: `${commenter.firstName} لقد علق على منشورك: ${post.postContent}, ب: "${commentContent}". راجع المنشور لمزيد من التفاصيل..`,
         });
 
         return res.status(201).json({
