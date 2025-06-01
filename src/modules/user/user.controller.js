@@ -161,13 +161,14 @@ export const DeleteMyAccount = async (req, res, next) => {
 export const AddCar = async (req, res, next) => {
 
     const userId = req.authUser.id
-    const { carName, carModel, nationality, plateNumber, trafficDepartment } = req.body
+    const { carName, carModel, nationality, plateNumber, trafficDepartment,expiry } = req.body
     const car = await Car.create({
         carName,
         carModel,
         nationality,
         plateNumber,
         trafficDepartment,
+        expiry,
         userId: userId
     })
     if (!car) {

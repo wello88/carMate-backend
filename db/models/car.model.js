@@ -15,6 +15,7 @@ Car.init(
     carModel:{type:DataTypes.STRING,allowNull:false},
     plateNumber:{type:DataTypes.STRING,allowNull:false},
     trafficDepartment:{type:DataTypes.STRING,allowNull:false},
+    expiry:{type:DataTypes.STRING,allowNull:false},
 },{
     sequelize,
     modelName:'Car',

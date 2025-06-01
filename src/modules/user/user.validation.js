@@ -15,7 +15,8 @@ export const addCarSchema = Joi.object({
     nationality: Joi.string().min(2).max(50).required(),
     carModel: Joi.string().min(2).max(50).required(),
     plateNumber: Joi.string().min(2).max(15).required(),
-    trafficDepartment: Joi.string().min(2).max(50).required()
+    trafficDepartment: Joi.string().min(2).max(50).required(),
+    expiry: Joi.string().required()
 });
 
 // Middleware for validating user requests
