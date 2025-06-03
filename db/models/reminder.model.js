@@ -17,6 +17,8 @@ Reminder.init(
   { sequelize, modelName: 'Reminder', tableName: 'reminders', timestamps: true }
 )
 User.hasMany(Reminder, { foreignKey: 'userId', onDelete: 'CASCADE' })
+Reminder.belongsTo(User, { foreignKey: 'userId' });
+
 export default Reminder
  
 

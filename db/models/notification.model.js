@@ -20,5 +20,7 @@ Notification.init(
 );
 
 User.hasMany(Notification, { foreignKey: 'userId', onDelete: 'CASCADE' });
+Notification.belongsTo(User, { foreignKey: 'userId' });
 
 export default Notification;
+  

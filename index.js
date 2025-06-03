@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url'
 import cors from "cors";
 import { initApp } from "./src/initApp.js"
 import { syncDatabase } from "./db/index.js"
+import './cronJob.js';
 
 const app = express()
 // Enable CORS for all origins
