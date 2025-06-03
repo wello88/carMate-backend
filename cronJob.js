@@ -1,9 +1,8 @@
 // cronJob.js
 import cron from 'node-cron';
 import { Op } from 'sequelize';
-import Reminder from '../carMate-backend/db/models/reminder.model.js'; 
-import Notification from '../carMate-backend/db/models/notification.model.js'; 
-import { User } from './db/index.js';
+ 
+import { User, Reminder,Notification } from './db/index.js';
 
 
 // This function checks for reminders expiring in 3 days and sends notifications
