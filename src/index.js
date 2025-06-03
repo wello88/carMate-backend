@@ -12,6 +12,7 @@ import notificationRouter from "./modules/notification/notification.routes.js";
 import commentRouter from "./modules/comments/comment.routes.js";
 import sessionRouter from "./modules/session/session.routes.js";
 import contactUsRouter from "./modules/contact-us/contactUs.routes.js";
+import cronRouter from "./modules/cron/cron.routes.js";
 
 export {
 
@@ -28,7 +29,8 @@ export {
     notificationRouter,
     commentRouter,
     sessionRouter,
-    contactUsRouter
+    contactUsRouter,
+    cronRouter
 }
 
 
