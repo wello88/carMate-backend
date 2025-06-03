@@ -45,7 +45,7 @@ export const sendUpcomingDeadlineNotifications = async () => {
   }
 };
 
-cron.schedule('19 4 * * *', () => {
+cron.schedule('26 4 * * *', () => {
   console.log(`[${new Date().toISOString()}] Running daily reminder check at 3:39 AM…`);
   sendUpcomingDeadlineNotifications();
 });
